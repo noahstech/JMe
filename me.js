@@ -1,3 +1,4 @@
+// version 0.1
 var me = $m = (function (config) {
 	var that;
 	var obj = function () {
