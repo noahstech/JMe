@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html xmlns:ng="http://angularjs.org" id="ng-app" ng-app="AngularApp">
+<head>
+	<meta charset="UTF-8">
+	<title>me.js demo</title>
+	<script src="libs/jquery-2.0.2.min.js"></script>
+	<script src="libs/angular1.2.9.min.js"></script>
+	<script src="libs/angular1.2.0-sanitize.min.js"></script>
+	<script src="../me-1.0.js"></script>
+
+	<script src="js/me.config.js"></script>
+	<script src="js/me.global.js"></script>
+
+	<script src="js-ctrl/contentCtrl.js"></script>
+</head>
+<body ng-controller="me.ctrl">
+	<div id="main_body"></div>
+</body>
+</html>
+<script>
+	me.run('AngularApp', ['ngSanitize']);
+</script>
