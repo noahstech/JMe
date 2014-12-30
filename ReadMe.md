@@ -1,6 +1,6 @@
 ##JMe描述##
 
-`JMe`是一款基于[jQuery](http://jquery.com/) , [AngularJS](https://angularjs.org/)为基础所封装出来的单页面网站框架库，其优点是高效，页面无刷新切换，页面间通讯方便。
+`JMe`是一款基于[jQuery](http://jquery.com/) , [AngularJS](https://angularjs.org/)为基础的单页面网站框架库
 
 ##核心方法##
 
@@ -10,17 +10,24 @@
 	me.on(...);
 	me.hide(...);
 	me.trigger(...);
+
 具体方法介绍请直接查看`me.js`中注释，详细的API介绍稍后会展示给大家
 
 ##使用方法##
 
-1.页面必须引用[AngularJS](https://angularjs.org/) ，以及`me.js`
+1.页面必须引用[jQuery](http://jquery.com/) ,[AngularJS](https://angularjs.org/) ，以及`me.js`
 
-2.创建框架页面`index.html`，并在html标签中添加id&ng-app属性 `<html xmlns:ng="http://angularjs.org" id="ng-app" ng-app="AngularApp">` 
+2.创建框架页面`index.html`，并在html标签中添加id&ng-app属性 
 
-3.页面底部添加Javascript代码（确保所有script和dom都加载完成）`me.run('AngularApp', ['ngSanitize']);` 后面的ngSanitize参数是第三方插件，这里不解释了。
+    <html xmlns:ng="http://angularjs.org" id="ng-app" ng-app="AngularApp"> 
 
-4.在页面body标签中添加controller `<body ng-controller="me.ctrl"></body>`
+3.页面底部添加Javascript代码（确保所有script和dom都加载完成） 后面的ngSanitize参数是第三方插件，这里不解释了。
+
+	me.run('AngularApp', ['ngSanitize']);
+
+4.在页面body标签中添加controller
+
+	<body ng-controller="me.ctrl"></body>
 
 5.配置`me.config.js` 
 
