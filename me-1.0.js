@@ -1,4 +1,6 @@
 var me = (function (config) {
+	var isIOS = !!navigator.userAgent.match(/(i[^;]+\;(U;)? CPU.+Mac OS X)/);
+
 	var that;
 	var obj = function () {
 		that = this;
@@ -57,6 +59,22 @@ var me = (function (config) {
 			that._readyFnList.push(fn);
 		},
 
+		_setTitle: function (options) {
+			if (!options.title) {
+				options.title = document.title;
+				return;
+			}
+
+			document.title = options.title;
+			if (!isIOS) return;
+
+			var $iframe = $('<iframe src="/favicon.ico" style="display:none;"></iframe>').on('load', function () {
+				setTimeout(function () {
+					$iframe.off('load').remove();
+				}, 0)
+			}).appendTo($('body'))
+		},
+
 		// 显示一个页面
 		show: function (src, options) {
 			options = options || {
@@ -64,19 +82,11 @@ var me = (function (config) {
 				param: {}, // 传递的参数参数
 				title: "", // 页面标题
 				refresh: false, // 是否立即渲染ui
-				//notNgEvent: false, // 是否不是ng事件
-				onShowed: function () { }, // 页面show成功之后的事件
-				onHided: function () { }, // 页面被隐藏时的事件
 				style: "", // null: 填充（默认） 'pop'：弹出层
 			};
 
 			that._log(src, options);
-
-			if (options.title) {
-				document.title = options.title;
-			} else {
-				options.title = document.title;
-			}
+			that._setTitle(options);
 
 			var lastPage = that._getLastPage(),
 				html = that._getPageHtml(src, options),
@@ -101,29 +111,38 @@ var me = (function (config) {
 			}
 
 			options.refresh && that.$scope.$apply();
-			options.onShowed && options.onShowed();
 
 			return newPage;
 		},
 
-		// 隐藏页面
-		hide: function () {
+		/**
+		 * 关闭页面，如果只剩下一个页面，则不会有任何动作
+		 * @function
+		 * @param {Object} params - 这里的参数将会被传入页面hide事件中
+		 * @param {Number} layer - 关闭的层级，默认为1，表示关闭当前页面，如果大于1，则往上关闭相应的页面
+		 */
+		hide: function (params, layer) {
+			if (that.pageList.length <= 0) {
+				return;
+			}
+
+			that._hideParam = params;
 			history.go(-1);
 		},
 
 		// 获得顶层页面的参数
 		param: function () {
-			return that.top().param;
+			return that.page().param;
 		},
 
 		// 执行顶层页面的回调
 		trigger: function () {
-			var page = that.top();
+			var page = that.page();
 			page.exec.apply(page, arguments);
 		},
 
 		// 获取顶层的页面对象
-		top: function () {
+		page: function () {
 			return that._getLastPage();
 		},
 
@@ -173,12 +192,6 @@ var me = (function (config) {
 					}
 				}
 
-				//for (var i = 0; i < that.ctrlExtend.length; i++) {
-				//	for (var j in that.ctrlExtend[i]) {
-				//		pro[j] = that.ctrlExtend[i][j];
-				//	}
-				//}
-
 				obj.prototype = pro;
 
 				return new obj();
@@ -194,29 +207,31 @@ var me = (function (config) {
 		},
 
 		_hidePage: function () {
-			if (that.pageList.length == 0) {
-				return;
-			}
+			if (that.pageList.length <= 0) return;
 
 			// 删掉当前页面
 			var curPageObj = that._getLastPage(true);
 			that._cleanCtrl();
-			curPageObj.onHided && curPageObj.onHided();
+
+			// 出发hide事件
+			that._triggerEvent(curPageObj, "hide", that._hideParam ? [that._hideParam] : null);
+			that._hideParam = null;
+
 			$("#" + curPageObj.id).remove();
 
 			// 显示上一个页面
 			var lastPage = that._getLastPage();
-
 			if (lastPage) {
 				that.$location.hash(lastPage.hash);
 				$("#" + lastPage.id).show();
-				document.title = lastPage.title;
+				that._setTitle(lastPage);
 
 				that.$scope.$$postDigest(function () {
 					window.scrollTo(0, lastPage.scrollTop);
 				});
 			}
 
+			// 显示被隐藏的元素
 			if (that.config.hideSelector && that.pageList.length == 1) {
 				$(that.config.hideSelector).show();
 			}
@@ -281,8 +296,7 @@ var me = (function (config) {
 				hash: (options.showType == 0) ? "" : pageId,
 				scrollTop: 0,
 				param: options.param,
-				title: that.pageList.length == 0 ? document.title : options.title,
-				onHided: options.onHided,
+				title: options.title,
 				style: options.style,
 				src: src
 			};
@@ -308,22 +322,26 @@ var me = (function (config) {
 			}
 
 			pageObj.exec = function (ename) {
-				if (!ename
-					|| !this._eventMap
-					|| !(ename in this._eventMap)
-					|| typeof (this._eventMap[ename]) != "function")
-					return;
-
-				var arg = null;
+				var args = null;
 				if (arguments.length > 1) {
-					arg = [];
+					args = [];
 					for (var i = 1; i < arguments.length; i++) {
-						arg.push(arguments[i]);
+						args.push(arguments[i]);
 					}
 				}
-				this._eventMap[ename].apply(this, arg);
+
+				that._triggerEvent(this, ename, args);
 				return this;
 			}
+		},
+
+		_triggerEvent: function (page, ename, args) {
+			if (!ename
+				|| !page._eventMap
+				|| !(ename in page._eventMap)
+				|| typeof (page._eventMap[ename]) != "function")
+				return;
+			page._eventMap[ename].apply(page, args);
 		},
 
 		_getContainer: function () {
