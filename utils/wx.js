@@ -46,19 +46,59 @@ var wx = (function () {
 	};
 
 	obj.prototype = {
+		/**
+		 * 设置分享配置信息
+		 * @function setShare 
+		 * @param {Object} shareParam - 分享参数
+		 * @property {String} ShareImgUrl - 分享图片链接
+		 * @property {String} ShareLink - 分享指向路径
+		 * @property {String} ShareTitle - 分享标题
+		 * @property {String} ShareDesc - 分享描述
+		 * @param {function} callback 回调方法
+		 */
 		setShare: function(shareParam, callback) {
 			that.shareParam = shareParam;
 			that.shareCallback = callback;
 		},
+
+		/**
+		 * 获得网络状况
+		 * @function getNetwork 
+		 */
 		getNetwork: function (){
 			return networkType;
 		},
+
+		/**
+		 * 隐藏右上角按钮
+		 * @function hideOptionMenu 
+		 */
 		hideOptionMenu:function(){
 			WeixinJSBridge.call('hideOptionMenu');
 		},
+
+		/**
+		 * 关闭窗口
+		 * @function closeWindow 
+		 */
 		closeWindow:function(){
 			WeixinJSBridge.invoke('closeWindow',{},function(res){});
 		},
+
+		/**
+		 * 发起支付请求
+		 * @function payRequest 
+		 * @param {String} payAppId - 支付appId
+		 * @param {String} payAppKey - 支付appKey
+		 * @param {String} partnerId - 支付partnerId
+		 * @param {String} partnerKey - 支付partnerKey
+		 * @param {String} productName - 商品名称
+		 * @param {String} orderNum 订单号
+		 * @param {String} totalPrice 总价格（分）
+		 * @param {String} clientIp 客户端ip
+		 * @param {String} notifyUrl 通知url
+		 * @param {function} callback 回调方法
+		 */
 		payRequest: function (payAppId, payAppKey, partnerId, partnerKey, productName, orderNum, totalPrice, clientIp, notifyUrl, callback) {
 			if(typeof WeixinJSBridge == "undefined"){
 				console.log("error WeixinJSBridge is undefined");
@@ -81,6 +121,11 @@ var wx = (function () {
 				}
 			});
 		},
+
+		/**
+		 * 监听微信回调
+		 * @function _onBridgeReady 
+		 */
 		_onBridgeReady: function(){
 			WeixinJSBridge.on('menu:share:appmessage',
 				function (argv) {
@@ -134,6 +179,18 @@ var wx = (function () {
 
 			WeixinJSBridge.call('hideToolbar');
 		},
+
+		/**
+		 * 支付请求获取package
+		 * @function _getPackage 
+		 * @param {String} partnerId - 支付partnerId
+		 * @param {String} partnerKey - 支付partnerKey
+		 * @param {String} productName - 商品名称
+		 * @param {String} orderNum 订单号
+		 * @param {String} totalPrice 总价格（分）
+		 * @param {String} clientIp 客户端ip
+		 * @param {String} notifyUrl 通知url
+		 */
 		_getPackage: function (partnerId, partnerKey, productName, orderNum, totalPrice, clientIp, notifyUrl) {
 			var banktype = "WX";
 			var fee_type = "1";
@@ -160,6 +217,13 @@ var wx = (function () {
 
 			return completeString;
 		},
+
+		/**
+		 * 支付请求获取签名
+		 * @function _getSign 
+		 * @param {String} payAppId - 支付payAppId
+		 * @param {String} payAppKey - 支付payAppKey
+		 */
 		_getSign: function (payAppId, payAppKey) {
 			var app_id = payAppId;
 			var app_key = payAppKey
@@ -171,6 +235,11 @@ var wx = (function () {
 			sign = CryptoJS.SHA1(keyvaluestring).toString();
 			return sign;
 		},
+
+		/**
+		 * 支付请求获取一个时间戳
+		 * @function _getTimeStamp 
+		 */
 		_getTimeStamp: function () {
 			if (oldTimeStamp) return oldTimeStamp;
 			var timestamp=new Date().getTime();
@@ -178,6 +247,11 @@ var wx = (function () {
 			oldTimeStamp = timestampstring;
 			return timestampstring;
 		},
+
+		/**
+		 * 支付请求获取一个随机数
+		 * @function _getNonceStr 
+		 */
 		_getNonceStr: function () {
 			if (oldNonceStr) return oldNonceStr;
 			var $chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
