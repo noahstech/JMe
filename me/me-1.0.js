@@ -1,9 +1,8 @@
 ;(function () {
-	var isIOS = !!navigator.userAgent.match(/(i[^;]+\;(U;)? CPU.+Mac OS X)/);
-
 	var utils = (function () {
-		var o = {};
+		var isIOS = !!navigator.userAgent.match(/(i[^;]+\;(U;)? CPU.+Mac OS X)/);
 
+		var o = {};
 		o.setTitle = function (title) {
 			document.title = title;
 			if (!isIOS) return;
@@ -29,7 +28,7 @@
 	var obj = function () {
 		that = this;
 
-		this.pageList = [];
+		this._pageList = [];
 		this._readyFnList = [];
 		this._directiveList = [];
 		//this._serviceList = [];
@@ -160,7 +159,7 @@
 		 * @param {Number} layer - 关闭的层级，默认为1，表示关闭当前页面，如果大于1，则往上关闭相应的页面
 		 */
 		hide: function (params, layer) {
-			if (that.pageList.length <= 0) {
+			if (that._pageList.length <= 0) {
 				return;
 			}
 
@@ -257,8 +256,8 @@
 		 * @param {Boolean} isRemove - 获取后是否从队列中删除
 		 */
 		_getLastPage: function (isRemove) {
-			if (that.pageList.length > 0) {
-				return isRemove ? that.pageList.pop() : that.pageList[that.pageList.length - 1];
+			if (that._pageList.length > 0) {
+				return isRemove ? that._pageList.pop() : that._pageList[that._pageList.length - 1];
 			}
 		},
 
@@ -268,7 +267,7 @@
 		 * @private
 		 */
 		_hidePage: function () {
-			if (that.pageList.length <= 0) return;
+			if (that._pageList.length <= 0) return;
 
 			// 删掉当前页面
 			var curPageObj = that._getLastPage(true);
@@ -293,7 +292,7 @@
 			}
 
 			// 显示被隐藏的元素
-			if (that.config.hideSelector && that.pageList.length == 1) {
+			if (that.config.hideSelector && that._pageList.length == 1) {
 				$(that.config.hideSelector).show();
 			}
 		},
@@ -398,9 +397,9 @@
 
 			if (options.showType == 0) {
 				that._cleanCtrl(true);
-				that.pageList = [pageObj];
+				that._pageList = [pageObj];
 			} else {
-				that.pageList.push(pageObj);
+				that._pageList.push(pageObj);
 			}
 
 			return page;
