@@ -1,4 +1,4 @@
-var me = (function (config) {
+var me = (function () {
 	var isIOS = !!navigator.userAgent.match(/(i[^;]+\;(U;)? CPU.+Mac OS X)/);
 
 	var that;
@@ -11,6 +11,10 @@ var me = (function (config) {
 	};
 
 	obj.prototype = {
+		/**
+		 * me主入口
+		 * @function ctrl
+		 */
 		ctrl: function ($rootScope, $scope, $compile, $location) {
 			that.$scope = $scope;
 			that.$compile = $compile;
@@ -25,14 +29,17 @@ var me = (function (config) {
 			that._init();
 		},
 
-		// 配置me
+		/**
+		 * 配置me
+		 * @function config
+		 * @param {Object} cf - 配置参数
+		 * @property {String} main - 默认打开的页面
+		 * @property {String} container - 根元素的jQuery选择器
+		 * @property {String} hideSelector - 当showType = 1 打开页面的时候，需要隐藏的元素选择器，返回到一级页面时，会重新显示
+		 * @property {String} tplPath - 模板所在的路径，默认为tpl/
+		 */
 		config: function (cf) {
-			that.config = cf || {
-				main: "", // 默认打开的页面
-				container: "body", // 根元素
-				hideSelector: "", // 当showType = 1 打开页面的时候，需要隐藏的元素，返回到一级页面时，会重新显示
-				tplPath: "tpl/" // 模板所在的路径，默认为tpl/
-			};
+			that.config = cf
 		},
 
 		// 自定义服务
@@ -43,7 +50,12 @@ var me = (function (config) {
 		//	});
 		//},
 
-		// 启动angular
+		/**
+		 * 启动angular
+		 * @function ready
+		 * @param {String} appName - 应用程序名称
+		 * @param {Array} plugins - 插件列表
+		 */
 		run: function (appName, plugins) {
 			that._module = angular.module(appName, plugins);
 
@@ -52,39 +64,29 @@ var me = (function (config) {
 			//}
 		},
 
-		// 注入me稳定后需要执行的函数
+		/**
+		 * 注入me稳定后需要执行的函数
+		 * @function ready
+		 * @param {Function} fn - me稳定后执行的函数
+		 */
 		ready: function (fn) {
 			if (typeof fn != "function") return;
 
 			that._readyFnList.push(fn);
 		},
 
-		_setTitle: function (options) {
-			if (!options.title) {
-				options.title = document.title;
-				return;
-			}
-
-			document.title = options.title;
-			if (!isIOS) return;
-
-			var $iframe = $('<iframe src="/favicon.ico" style="display:none;"></iframe>').on('load', function () {
-				setTimeout(function () {
-					$iframe.off('load').remove();
-				}, 0)
-			}).appendTo($('body'))
-		},
-
-		// 显示一个页面
+		/**
+		 * 显示一个页面
+		 * @function show
+		 * @param {String} src - 页面src
+		 * @param {Object} options - 参数
+		 * @property {Number} showType - 页面类型，0：一级页面 1：非一级页面
+		 * @property {Object} param - 传递的参数参数
+		 * @property {String} title - 页面标题
+		 * @property {Boolean} refresh - 是否立即渲染ui
+		 * @property {String} style - null: 填充（默认） 'pop'：弹出层
+		 */
 		show: function (src, options) {
-			options = options || {
-				showType: 0, // 0：一级页面 1：非一级页面
-				param: {}, // 传递的参数参数
-				title: "", // 页面标题
-				refresh: false, // 是否立即渲染ui
-				style: "", // null: 填充（默认） 'pop'：弹出层
-			};
-
 			that._log(src, options);
 			that._setTitle(options);
 
@@ -117,7 +119,7 @@ var me = (function (config) {
 
 		/**
 		 * 关闭页面，如果只剩下一个页面，则不会有任何动作
-		 * @function
+		 * @function hide
 		 * @param {Object} params - 这里的参数将会被传入页面hide事件中
 		 * @param {Number} layer - 关闭的层级，默认为1，表示关闭当前页面，如果大于1，则往上关闭相应的页面
 		 */
@@ -130,30 +132,42 @@ var me = (function (config) {
 			history.go(-1);
 		},
 
-		// 获得顶层页面的参数
+		/**
+		 * 获得顶层页面的参数
+		 * @function param
+		 */
 		param: function () {
 			return that.page().param;
 		},
 
-		// 执行顶层页面的回调
-		trigger: function () {
+		/**
+		 * 执行顶层页面注册的事件
+		 * @function trigger
+		 * @param {String} ename - 事件名称
+		 * @param {Arguments} args - 传递的参数，多个参数逗号分隔
+		 */
+		trigger: function (ename, args) {
 			var page = that.page();
 			page.exec.apply(page, arguments);
 		},
 
-		// 获取顶层的页面对象
+		/**
+		 * 获取顶层的页面对象
+		 * @function page
+		 */
 		page: function () {
 			return that._getLastPage();
 		},
 
-		// 定义controller
-		define: function (ctrlName, fn) {
-			that.require(ctrlName, fn);
+		/**
+		 * 定义controller
+		 * @function define
+		 * @param {String} ctrlName - controller名称
+		 * @param {Object} fnList - 接口列表
+		 */
+		define: function (ctrlName, fnList) {
+			that.require(ctrlName, fnList);
 		},
-
-		//extendCtrl: function (fnObj) {
-		//	that.ctrlExtend.push(fnObj);
-		//},
 
 		require: function (ctrlName, fn) {
 			if (window[ctrlName]) throw new Error("me中已经注册了名为" + ctrlName + "的控制器");
@@ -200,12 +214,23 @@ var me = (function (config) {
 			return window[ctrlName];
 		},
 
+		/**
+		 * 获取顶层页面对象
+		 * @function _getLastPage
+		 * @private
+		 * @param {Boolean} isRemove - 获取后是否从队列中删除
+		 */
 		_getLastPage: function (isRemove) {
 			if (that.pageList.length > 0) {
 				return isRemove ? that.pageList.pop() : that.pageList[that.pageList.length - 1];
 			}
 		},
 
+		/**
+		 * 删除顶层页面
+		 * @function _hidePage
+		 * @private
+		 */
 		_hidePage: function () {
 			if (that.pageList.length <= 0) return;
 
@@ -237,6 +262,12 @@ var me = (function (config) {
 			}
 		},
 
+		/**
+		 * 准备销毁页面控制器内存
+		 * @function _cleanCtrl
+		 * @private
+		 * @param {Boolean} isCleanAll - 是否销毁所有的页面，如果为false，只销毁当前的页面
+		 */
 		_cleanCtrl: function (isCleanAll) {
 			if (!isCleanAll)
 				that._cleanScope(angular.element($(that._getContainer()).find("> div:last > div")[0]));
@@ -250,6 +281,12 @@ var me = (function (config) {
 			}
 		},
 
+		/**
+		 * 销毁某个angular控制器
+		 * @function _cleanScope
+		 * @private
+		 * @param {Element} angularEl - angular元素
+		 */
 		_cleanScope: function (angularEl) {
 			if (angularEl.length > 0) {
 				var vScope = angularEl.scope();
@@ -257,6 +294,14 @@ var me = (function (config) {
 			}
 		},
 
+		/**
+		 * 路由捕捉到的页面url更改事件
+		 * @function _pageChange
+		 * @private
+		 * @param {Event} angularEvent - event对象
+		 * @param {String} newUrl - 更改之后的url
+		 * @param {String} oldUrl - 更改之前的url
+		 */
 		_pageChange: function (angularEvent, newUrl, oldUrl) {
 			var lastPage = that._getLastPage();
 
@@ -274,6 +319,11 @@ var me = (function (config) {
 			that._hidePage();
 		},
 
+		/**
+		 * 在ctrl主入口中调用的初始化方法
+		 * @function _init
+		 * @private
+		 */
 		_init: function () {
 			that.$location.hash("");
 
@@ -286,6 +336,13 @@ var me = (function (config) {
 			}
 		},
 
+		/**
+		 * 获取即将打开的页面html对象
+		 * @function _getPageHtml
+		 * @private
+		 * @param {String} src - me.show中传入的src
+		 * @param {Object} options - me.show中传入的options对象
+		 */
 		_getPageHtml: function (src, options) {
 			var pageId = "id" + Math.random().toString().substring(2);
 			var page = '<div id="' + pageId + '" ng-include src="\'' + src + '?temp=' + Math.random() + '\'"></div>';
@@ -313,6 +370,12 @@ var me = (function (config) {
 			return page;
 		},
 
+		/**
+		 * 在页面对象中添加on和exec函数
+		 * @function _appendEvent
+		 * @private
+		 * @param {Object} pageObj - 页面对象
+		 */
 		_appendEvent: function (pageObj) {
 			pageObj.on = function (ename, callback) {
 				if (typeof (callback) != "function") return;
@@ -335,6 +398,14 @@ var me = (function (config) {
 			}
 		},
 
+		/**
+		 * 触发页面的事件
+		 * @function _triggerEvent
+		 * @private
+		 * @param {Object} page - 页面对象
+		 * @param {String} ename - 事件名称
+		 * @param {Array} args - 参数
+		 */
 		_triggerEvent: function (page, ename, args) {
 			if (!ename
 				|| !page._eventMap
@@ -344,10 +415,21 @@ var me = (function (config) {
 			page._eventMap[ename].apply(page, args);
 		},
 
+		/**
+		 * 获取config中设置的container对象，如果没有设置，返回body对象
+		 * @function _getContainer
+		 * @private
+		 */
 		_getContainer: function () {
 			return that.config.container || "body";
 		},
 
+		/**
+		 * 获取url上的参数
+		 * @function _getQueryString
+		 * @private
+		 * @param {String} name - 参数名称
+		 */
 		_getQueryString: function (name) {
 			var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i");
 			var r = window.location.search.substr(1).match(reg);
@@ -355,6 +437,13 @@ var me = (function (config) {
 			return "";
 		},
 
+		/**
+		 * me.show页面时，在控制台打印的数据
+		 * @function _getQueryString
+		 * @private
+		 * @param {String} src - 路径
+		 * @param {Object} options - me.show的时候传入的options
+		 */
 		_log: function (src, options) {
 			console.group("me.js", "");
 			console.log("%c 链接：" + src, "color:green");
@@ -363,12 +452,39 @@ var me = (function (config) {
 			console.groupEnd();
 		},
 
+		/**
+		 * 触发me.ready中注册的函数
+		 * @function _triggerReadyFn
+		 * @private
+		 */
 		_triggerReadyFn: function () {
 			if (that._readyFnList.length == 0) return;
 
 			for (var i = 0; i < that._readyFnList.length; i++) {
 				that._readyFnList[i](that.$scope);
 			}
+		},
+
+		/**
+		 * 设置新打开的页面标题
+		 * @function _setTitle
+		 * @private
+		 * @param {String} options - me.show的时候传入的options
+		 */
+		_setTitle: function (options) {
+			if (!options.title) {
+				options.title = document.title;
+				return;
+			}
+
+			document.title = options.title;
+			if (!isIOS) return;
+
+			var $iframe = $('<iframe src="/favicon.ico" style="display:none;"></iframe>').on('load', function () {
+				setTimeout(function () {
+					$iframe.off('load').remove();
+				}, 0)
+			}).appendTo($('body'))
 		}
 	};
 
