@@ -4,12 +4,12 @@
 
 ##核心方法##
 
-	me.define(...);
-	me.page(...);
-	me.show(...);
-	me.on(...);
-	me.hide(...);
-	me.trigger(...);
+	me.define(...);//定义页面
+	me.page(...);//获取当前显示页面对象
+	me.show(...);//显示新页面
+	me.on(...);//注册事件
+	me.hide(...);//隐藏页面
+	me.trigger(...);//触发事件
 
 具体方法介绍请直接查看`me.js`中注释，详细的API介绍稍后会展示给大家
 
