@@ -76,12 +76,6 @@ var me = (function () {
 			//}
 		},
 
-		_buildDirective: function () {
-			for (var i = 0; i < that._directiveList.length; i++) {
-				that._module.directive(that._directiveList[i].tagName, that._directiveList[i].fn);
-			}
-		},
-
 		/**
 		 * 注入me稳定后需要执行的函数
 		 * @function ready
@@ -480,6 +474,12 @@ var me = (function () {
 
 			for (var i = 0; i < that._readyFnList.length; i++) {
 				that._readyFnList[i](that.$scope);
+			}
+		},
+
+		_buildDirective: function () {
+			for (var i = 0; i < that._directiveList.length; i++) {
+				that._module.directive(that._directiveList[i].tagName, that._directiveList[i].fn);
 			}
 		},
 
