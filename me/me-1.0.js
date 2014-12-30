@@ -1,5 +1,29 @@
-var me = (function () {
+;(function () {
 	var isIOS = !!navigator.userAgent.match(/(i[^;]+\;(U;)? CPU.+Mac OS X)/);
+
+	var utils = (function () {
+		var o = {};
+
+		o.setTitle = function (title) {
+			document.title = title;
+			if (!isIOS) return;
+
+			var $iframe = $('<iframe src="/favicon.ico" style="display:none;"></iframe>').on('load', function () {
+				setTimeout(function () {
+					$iframe.off('load').remove();
+				}, 0)
+			}).appendTo($('body'))
+		}
+
+		o.getQueryString = function (name) {
+			var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i");
+			var r = window.location.search.substr(1).match(reg);
+			if (r != null) return unescape(r[2]);
+			return "";
+		}
+
+		return o;
+	})();
 
 	var that;
 	var obj = function () {
@@ -339,7 +363,7 @@ var me = (function () {
 		_init: function () {
 			that.$location.hash("");
 
-			var startPageName = that._getQueryString("p");
+			var startPageName = utils.getQueryString("p");
 			if (startPageName) {
 				that.show((that.config.tplPath || "tpl/") + startPageName + ".html", { showType: 0 });
 			}
@@ -437,27 +461,14 @@ var me = (function () {
 		},
 
 		/**
-		 * 获取url上的参数
-		 * @function _getQueryString
-		 * @private
-		 * @param {String} name - 参数名称
-		 */
-		_getQueryString: function (name) {
-			var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i");
-			var r = window.location.search.substr(1).match(reg);
-			if (r != null) return unescape(r[2]);
-			return "";
-		},
-
-		/**
 		 * me.show页面时，在控制台打印的数据
-		 * @function _getQueryString
+		 * @function _log
 		 * @private
 		 * @param {String} src - 路径
 		 * @param {Object} options - me.show的时候传入的options
 		 */
 		_log: function (src, options) {
-			console.group("me.js", "");
+			console.group("me.js");
 			console.log("%c 链接：" + src, "color:green");
 			console.log("%c 参数：" + (options.param ? "" : "[无]"), "color:green");
 			options.param && console.log(options.param)
@@ -495,16 +506,9 @@ var me = (function () {
 				return;
 			}
 
-			document.title = options.title;
-			if (!isIOS) return;
-
-			var $iframe = $('<iframe src="/favicon.ico" style="display:none;"></iframe>').on('load', function () {
-				setTimeout(function () {
-					$iframe.off('load').remove();
-				}, 0)
-			}).appendTo($('body'))
+			utils.setTitle(options.title);
 		}
 	};
-
-	return new obj();
+	
+	window.me = new obj();
 })();
