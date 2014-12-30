@@ -7,6 +7,7 @@ var me = (function () {
 
 		this.pageList = [];
 		this._readyFnList = [];
+		this._directiveList = [];
 		//this._serviceList = [];
 	};
 
@@ -50,6 +51,15 @@ var me = (function () {
 		//	});
 		//},
 
+		directive: function (tagName, fn) {
+			if (typeof fn != "function") return;
+
+			that._directiveList.push({
+				tagName: tagName,
+				fn: fn
+			});
+		},
+
 		/**
 		 * 启动angular
 		 * @function ready
@@ -59,9 +69,17 @@ var me = (function () {
 		run: function (appName, plugins) {
 			that._module = angular.module(appName, plugins);
 
+			that._buildDirective();
+
 			//for (var i = 0; i < that._serviceList.length; i++) {
 			//	that._module.factory(that._serviceList[i].name, that._serviceList[i].fn);
 			//}
+		},
+
+		_buildDirective: function () {
+			for (var i = 0; i < that._directiveList.length; i++) {
+				that._module.directive(that._directiveList[i].tagName, that._directiveList[i].fn);
+			}
 		},
 
 		/**
@@ -166,7 +184,7 @@ var me = (function () {
 		 * @param {Object} fnList - 接口列表
 		 */
 		define: function (ctrlName, fnList) {
-			that.require(ctrlName, fnList);
+			return that.require(ctrlName, fnList);
 		},
 
 		require: function (ctrlName, fn) {
