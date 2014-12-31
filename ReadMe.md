@@ -1,8 +1,8 @@
-##JMe描述##
+##JMe描述
 
 `JMe`是一款基于[jQuery](http://jquery.com/) , [AngularJS](https://angularjs.org/)为基础的单页面网站框架库
 
-##核心方法##
+##核心方法
 
 	me.define(...);//定义页面
 	me.page(...);//获取当前显示页面对象
@@ -13,7 +13,7 @@
 
 具体方法介绍请直接查看`me.js`中注释，详细的API介绍稍后会展示给大家
 
-##使用方法##
+##使用方法
 
 1.页面必须引用[jQuery](http://jquery.com/) ,[AngularJS](https://angularjs.org/) ，以及`me.js`
 
@@ -69,6 +69,6 @@
 9.我们可以打开浏览器查看了！
 
 
-##结束语##
+##结束语
 
 `JMe`是完全开源的项目，欢迎大家来拍砖，多提提意见。有什么好的意见可以留言给我们。
