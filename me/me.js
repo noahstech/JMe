@@ -24,7 +24,7 @@
 		return o;
 	})();
 
-	var that;
+	var that, _scope, _compile, _location;
 	var obj = function () {
 		that = this;
 
@@ -40,15 +40,15 @@
 		 * @function ctrl
 		 */
 		ctrl: function ($rootScope, $scope, $compile, $location) {
-			that.$scope = $scope;
-			that.$compile = $compile;
-			that.$location = $location;
+			_scope = $scope;
+			_compile = $compile;
+			_location = $location;
 
 			that._triggerReadyFn();
 			$rootScope.$on('$locationChangeSuccess', that._pageChange);
 
-			that.$scope.show = that.show;
-			that.$scope.hide = that.hide;
+			_scope.show = that.show;
+			_scope.hide = that.hide;
 
 			that._init();
 		},
@@ -73,6 +73,37 @@
 		//		fn: fn
 		//	});
 		//},
+
+		/**
+		 * 设置或者获取全局数据，参数可以是一个object，也可以是key,value
+		 * @function global
+		 * @demo 
+		 * 设置：
+		 * me.global(key, value)
+		 * 或者
+		 * me.global({key1: value1, key2: value2})
+		 * 获取：
+		 * js中 me.global.key
+		 * html中 global.key
+		 */
+		global: function () {
+			function _setGlobalValue(key, value) {
+				that.global[key] = value;
+
+				_scope.global || (_scope.global = {});
+				_scope.global[key] = value;
+			}
+
+			if (arguments.length == 1
+				&& typeof arguments[0] == "object") {
+				for (var key in arguments[0]) {
+					_setGlobalValue(key, arguments[0][key]);
+				}
+			} else if (arguments.length == 2
+				&& typeof (arguments[0] == "string")) {
+				_setGlobalValue(arguments[0], arguments[1]);
+			}
+		},
 
 		directive: function (tagName, fn) {
 			if (typeof fn != "function") return;
@@ -143,11 +174,11 @@
 					container.append(html);
 				}
 
-				that.$location.hash(newPage.hash)
+				_location.hash(newPage.hash)
 				that.config.hideSelector && $(that.config.hideSelector).hide();
 			}
 
-			options.refresh && that.$scope.$apply();
+			options.refresh && _scope.$apply();
 
 			return newPage;
 		},
@@ -282,11 +313,11 @@
 			// 显示上一个页面
 			var lastPage = that._getLastPage();
 			if (lastPage) {
-				that.$location.hash(lastPage.hash);
+				_location.hash(lastPage.hash);
 				$("#" + lastPage.id).show();
 				that._setTitle(lastPage);
 
-				that.$scope.$$postDigest(function () {
+				_scope.$$postDigest(function () {
 					window.scrollTo(0, lastPage.scrollTop);
 				});
 			}
@@ -344,7 +375,7 @@
 				return;
 			}
 
-			var newHash = that.$location.hash(),
+			var newHash = _location.hash(),
                 oldHash = lastPage.hash;
 
 			if (newHash == oldHash) {
@@ -360,7 +391,7 @@
 		 * @private
 		 */
 		_init: function () {
-			that.$location.hash("");
+			_location.hash("");
 
 			var startPageName = utils.getQueryString("p");
 			if (startPageName) {
@@ -381,7 +412,7 @@
 		_getPageHtml: function (src, options) {
 			var pageId = "id" + Math.random().toString().substring(2);
 			var page = '<div id="' + pageId + '" ng-include src="\'' + src + '?temp=' + Math.random() + '\'"></div>';
-			page = that.$compile(page)(that.$scope);
+			page = _compile(page)(_scope);
 
 			var pageObj = {
 				id: pageId,
@@ -483,7 +514,7 @@
 			if (that._readyFnList.length == 0) return;
 
 			for (var i = 0; i < that._readyFnList.length; i++) {
-				that._readyFnList[i](that.$scope);
+				that._readyFnList[i](_scope);
 			}
 		},
 
@@ -508,6 +539,6 @@
 			utils.setTitle(options.title);
 		}
 	};
-	
+
 	window.me = new obj();
 })();
