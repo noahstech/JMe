@@ -1,30 +1,4 @@
-﻿/**
- * 数字键盘
- */
-me.directive("mNuminput", function () {
-	return {
-		restrict: "EA",
-		replace: true,
-		require: "?ngModel",
-		template: '<div></div>',
-		link: function (scope, element, attrs, ngModel) {
-			if (!ngModel) return;
-
-			ngModel.$render = function () {
-				
-			};
-
-			new NumberInput(element[0], {
-				onChanged: function (value) {
-					scope.$apply(function () {
-						ngModel.$setViewValue(value);
-					});
-				}
-			});
-		}
-	}
-});
-
+﻿
 /**
  * 带翻加减的数字输入框
  */

@@ -1,4 +1,4 @@
-﻿var NumberInput = (function () {
+var NumberInput = (function () {
     var obj = function (el, options) {
         this.options = options || {
             inputId: "", // 关联的input的id
@@ -111,3 +111,30 @@
 
     return obj;
 })();
+/**
+ * 数字键盘
+ */
+me.directive("mNuminput", function () {
+	return {
+		restrict: "EA",
+		replace: true,
+		require: "?ngModel",
+		template: '<div></div>',
+		link: function (scope, element, attrs, ngModel) {
+			if (!ngModel) return;
+
+			ngModel.$render = function () {
+				
+			};
+
+			new NumberInput(element[0], {
+				onChanged: function (value) {
+					scope.$apply(function () {
+						ngModel.$setViewValue(value);
+					});
+				}
+			});
+		}
+	}
+});
+
