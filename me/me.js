@@ -2,8 +2,8 @@
 	var utils = (function () {
 		var isIOS = !!navigator.userAgent.match(/(i[^;]+\;(U;)? CPU.+Mac OS X)/);
 
-		var o = {};
-		o.setTitle = function (title) {
+		var _utils = {};
+		_utils.setTitle = function (title) {
 			document.title = title;
 			if (!isIOS) return;
 
@@ -14,17 +14,17 @@
 			}).appendTo($('body'))
 		}
 
-		o.getQueryString = function (name) {
+		_utils.getQueryString = function (name) {
 			var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i");
 			var r = window.location.search.substr(1).match(reg);
 			if (r != null) return unescape(r[2]);
 			return "";
 		}
 
-		return o;
+		return _utils;
 	})();
 
-	var that, _scope, _compile, _location;
+	var that, _scope, _compile, _location, _config, _container, _animateOptions;
 	var obj = function () {
 		that = this;
 
@@ -45,7 +45,7 @@
 			_location = $location;
 
 			that._triggerReadyFn();
-			$rootScope.$on('$locationChangeSuccess', that._pageChange);
+			$rootScope.$on('$locationChangeSuccess', that._urlChanged);
 
 			_scope.show = that.show;
 			_scope.hide = that.hide;
@@ -63,7 +63,7 @@
 		 * @property {String} tplPath - 模板所在的路径，默认为tpl/
 		 */
 		config: function (cf) {
-			that.config = cf
+			_config = cf
 		},
 
 		// 自定义服务
@@ -105,6 +105,12 @@
 			}
 		},
 
+		/**
+		 * 扩展公共指令
+		 * @function ready
+		 * @param {String} tagName - 指令名称
+		 * @param {Function} fn - 指令构造函数，参考angular.directive
+		 */
 		directive: function (tagName, fn) {
 			if (typeof fn != "function") return;
 
@@ -158,24 +164,20 @@
 
 			var lastPage = that._getLastPage(),
 				html = that._getPageHtml(src, options),
-                container = $(that._getContainer()),
+                container = that._getContainer(),
 				newPage = that._getLastPage();
 
 			if (options.showType == 0) {
 				container.html(html);
-				that.config.hideSelector && $(that.config.hideSelector).show();
+				_config.hideSelector && $(_config.hideSelector).show();
 			} else {
 				lastPage && (lastPage.scrollTop = $(document).scrollTop());
 
-				if (newPage.style == "pop") {
-					container.append(html);
-				} else {
-					lastPage && ($("#" + lastPage.id).hide());
-					container.append(html);
-				}
+				container.append(html);
+				newPage.style == "pop" || (lastPage && ($("#" + lastPage.id).hide()));
 
 				_location.hash(newPage.hash)
-				that.config.hideSelector && $(that.config.hideSelector).hide();
+				_config.hideSelector && $(_config.hideSelector).hide();
 			}
 
 			options.refresh && _scope.$apply();
@@ -195,8 +197,21 @@
 			}
 
 			that._hideParam = params;
-			history.go(-1);
+			that._hideLayer = layer || 1;
+
+			that._triggerHide();
 		},
+
+		/**
+		 * 设置页面进入和离去动画，该配置作用于showType=1的情况
+		 * @function animate
+		 * @param {Object} options - 参数
+		 * @property {Function} show - 页面显示之前的回调函数，会传递即将被显示的页面对象和即将被隐藏的页面对象
+		 * @property {Function} hide - 页面隐藏之前的回调函数，会传递即将被显示的页面对象和即将被隐藏的页面对象
+		 */
+		//animate: function (options) {
+		//	_animateOptions = options;
+		//},
 
 		/**
 		 * 获得顶层页面的参数
@@ -281,6 +296,32 @@
 		},
 
 		/**
+		 * 处理页面进入和离去动画
+		 * @function _handleAnimate
+		 * @private
+		 * @param {Element} showPage - 即将被显示的元素
+		 * @param {Element} hidePage - 即将被隐藏的元素
+		 * @param {Boolean} isShow - 是显示页面还是隐藏页面
+		 */
+		//_handleAnimate: function (showPage, hidePage, isShow) {
+		//	if (!_animateOptions) return;
+
+		//	_animateOptions.show && _animateOptions.show($(showPage[0]), hidePage);
+		//},
+
+		/**
+		 * 执行hide
+		 * @function _triggerHide
+		 * @private
+		 */
+		_triggerHide: function () {
+			if (that._hideLayer <= 0) return;
+
+			that._hideLayer--;
+			history.go(-1);
+		},
+
+		/**
 		 * 获取顶层页面对象
 		 * @function _getLastPage
 		 * @private
@@ -323,9 +364,11 @@
 			}
 
 			// 显示被隐藏的元素
-			if (that.config.hideSelector && that._pageList.length == 1) {
-				$(that.config.hideSelector).show();
+			if (_config.hideSelector && that._pageList.length == 1) {
+				$(_config.hideSelector).show();
 			}
+
+			that._triggerHide();
 		},
 
 		/**
@@ -336,9 +379,9 @@
 		 */
 		_cleanCtrl: function (isCleanAll) {
 			if (!isCleanAll)
-				that._cleanScope(angular.element($(that._getContainer()).find("> div:last > div")[0]));
+				that._cleanScope(angular.element(that._getContainer().find("> div:last > div")[0]));
 			else {
-				var pages = $(that._getContainer()).find("> div"),
+				var pages = that._getContainer().find("> div"),
                     angularEl;
 				for (var i = 0; i < pages.length; i++) {
 					angularEl = angular.element(pages.eq(i).find("> div")[0]);
@@ -362,13 +405,13 @@
 
 		/**
 		 * 路由捕捉到的页面url更改事件
-		 * @function _pageChange
+		 * @function _urlChanged
 		 * @private
 		 * @param {Event} angularEvent - event对象
 		 * @param {String} newUrl - 更改之后的url
 		 * @param {String} oldUrl - 更改之前的url
 		 */
-		_pageChange: function (angularEvent, newUrl, oldUrl) {
+		_urlChanged: function (angularEvent, newUrl, oldUrl) {
 			var lastPage = that._getLastPage();
 
 			if (!lastPage) {
@@ -395,11 +438,27 @@
 
 			var startPageName = utils.getQueryString("p");
 			if (startPageName) {
-				that.show((that.config.tplPath || "tpl/") + startPageName + ".html", { showType: 0 });
+				that.show((_config.tplPath || "tpl/") + startPageName + ".html", { showType: 0 });
 			}
-			else if (that.config.main) {
-				that.show(that.config.main, { showType: 0 });
+			else if (_config.main) {
+				that.show(_config.main, { showType: 0 });
 			}
+		},
+
+		_getShowAniClass: function (options) {
+			if (!_config.animate
+				|| !_config.animate.show
+				|| options.showType == 0
+				|| options.style == "pop")
+				return "";
+
+			return ' class="' + _config.animate.show + '" ';
+		},
+
+		_getHideAniClass: function () {
+			if (!_config.animate || !_config.animate.hide) return "";
+
+			return ' class="' + _config.animate.hide + '" ';
 		},
 
 		/**
@@ -411,7 +470,10 @@
 		 */
 		_getPageHtml: function (src, options) {
 			var pageId = "id" + Math.random().toString().substring(2);
-			var page = '<div id="' + pageId + '" ng-include src="\'' + src + '?temp=' + Math.random() + '\'"></div>';
+			var page = '<div id="' + pageId + '" ng-include src="\'' + src + '?temp=' + Math.random() + '\'"';
+			//page += that._getShowAniClass(options);
+			page += "></div>";
+
 			page = _compile(page)(_scope);
 
 			var pageObj = {
@@ -424,7 +486,7 @@
 				src: src
 			};
 
-			that._appendEvent(pageObj);
+			that._attachEvent(pageObj);
 
 			if (options.showType == 0) {
 				that._cleanCtrl(true);
@@ -438,11 +500,11 @@
 
 		/**
 		 * 在页面对象中添加on和exec函数
-		 * @function _appendEvent
+		 * @function _attachEvent
 		 * @private
 		 * @param {Object} pageObj - 页面对象
 		 */
-		_appendEvent: function (pageObj) {
+		_attachEvent: function (pageObj) {
 			pageObj.on = function (ename, callback) {
 				if (typeof (callback) != "function") return;
 				this._eventMap = this._eventMap || {};
@@ -487,7 +549,8 @@
 		 * @private
 		 */
 		_getContainer: function () {
-			return that.config.container || "body";
+			_container || (_container = $(_config.container || "body"));
+			return _container;
 		},
 
 		/**
@@ -518,6 +581,11 @@
 			}
 		},
 
+		/**
+		 * 构建自定义指令
+		 * @function _buildDirective
+		 * @private
+		 */
 		_buildDirective: function () {
 			for (var i = 0; i < that._directiveList.length; i++) {
 				that._module.directive(that._directiveList[i].tagName, that._directiveList[i].fn);
