@@ -25,6 +25,7 @@
 	})();
 
 	var that, _scope, _compile, _location, _config, _container, _animateOptions;
+	var _http;
 	var obj = function () {
 		that = this;
 
@@ -39,10 +40,11 @@
 		 * me主入口
 		 * @function ctrl
 		 */
-		ctrl: function ($rootScope, $scope, $compile, $location) {
+		ctrl: function ($rootScope, $scope, $compile, $location,$http) {
 			_scope = $scope;
 			_compile = $compile;
 			_location = $location;
+			_http = $http;
 
 			that._triggerReadyFn();
 			$rootScope.$on('$locationChangeSuccess', that._urlChanged);
@@ -51,6 +53,28 @@
 			_scope.hide = that.hide;
 
 			that._init();
+		},
+
+		/**
+		 * 请求网络数据
+		 * @function ajax
+		 * @param {Object} option - 请求参数
+		 * @param {function} success - 成功回调函数
+		 * @param {function} failure - 失败回调函数
+	     * @param {function} before - 调用前准备函数
+		 */
+		ajax:function (option,success,failure,before) {
+			if(before && typeof(before) == 'function')before();
+
+			_http(option).success(function (data) {
+				
+				if(success && typeof(success) == 'function')success(data);
+
+			}).error(function (msg, status) {
+
+				console.log('me ajax callback error | msg='+msg+'\r\n\tstatus='+status);
+				if(failure && typeof(failure) == 'function')failure(msg,status);
+			});
 		},
 
 		/**
