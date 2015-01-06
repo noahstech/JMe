@@ -179,6 +179,7 @@
 		 * @property {String} style - null: 填充（默认） 'pop'：弹出层
 		 */
 		show: function (src, options) {
+			if(_config.mapping && _config.mapping[src]) src = _config.mapping[src];
 			that._log(src, options);
 			that._setTitle(options);
 
