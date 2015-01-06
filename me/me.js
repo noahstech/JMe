@@ -2,24 +2,34 @@
 	var utils = (function () {
 		var isIOS = !!navigator.userAgent.match(/(i[^;]+\;(U;)? CPU.+Mac OS X)/);
 
-		var _utils = {};
-		_utils.setTitle = function (title) {
-			document.title = title;
-			if (!isIOS) return;
+		var _utils = {
+			setTitle: function (title) {
+				document.title = title;
+				if (!isIOS) return;
 
-			var $iframe = $('<iframe src="/favicon.ico" style="display:none;"></iframe>').on('load', function () {
-				setTimeout(function () {
-					$iframe.off('load').remove();
-				}, 0)
-			}).appendTo($('body'))
-		}
+				var $iframe = $('<iframe src="/favicon.ico" style="display:none;"></iframe>').on('load', function () {
+					setTimeout(function () {
+						$iframe.off('load').remove();
+					}, 0)
+				}).appendTo($('body'))
+			},
 
-		_utils.getQueryString = function (name) {
-			var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i");
-			var r = window.location.search.substr(1).match(reg);
-			if (r != null) return unescape(r[2]);
-			return "";
-		}
+			getQueryString: function (name) {
+				var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i");
+				var r = window.location.search.substr(1).match(reg);
+				if (r != null) return unescape(r[2]);
+				return "";
+			},
+
+			endWidth: function (str, end) {
+				var reg = new RegExp(end + "$");
+				return reg.test(str);
+			},
+			
+			startWidth: function (str, start) {
+				return str.indexOf(start) == 0;
+			}
+		};
 
 		return _utils;
 	})();
@@ -82,7 +92,7 @@
 		 * @property {String} main - 默认打开的页面
 		 * @property {String} container - 根元素的jQuery选择器
 		 * @property {String} hideSelector - 当showType = 1 打开页面的时候，需要隐藏的元素选择器，返回到一级页面时，会重新显示
-		 * @property {String} tplPath - 模板所在的路径，默认为tpl/
+		 * @property {String} path - 模板所在的路径，默认为tpl/
 		 */
 		config: function (cf) {
 			_config = cf
@@ -490,7 +500,7 @@
 
 			var startPageName = utils.getQueryString("p");
 			if (startPageName) {
-				that.show((_config.tplPath || "tpl/") + startPageName + ".html", { showType: 0 });
+				that.show(startPageName, { showType: 0 });
 			}
 			else if (_config.main) {
 				that.show(_config.main, { showType: 0 });
@@ -522,7 +532,7 @@
 		 */
 		_getPageHtml: function (src, options) {
 			var pageId = "id" + Math.random().toString().substring(2);
-			var page = '<div id="' + pageId + '" ng-include src="\'' + src + '?temp=' + Math.random() + '\'"';
+			var page = '<div id="' + pageId + '" ng-include src="\'' + that._getTplSrc(src) + '?temp=' + Math.random() + '\'"';
 			//page += that._getShowAniClass(options);
 			page += "></div>";
 
@@ -548,6 +558,20 @@
 			}
 
 			return page;
+		},
+
+		_getTplSrc: function (src) {
+			_config.path = _config.path || "tpl/";
+
+			if (!utils.startWidth(src, _config.path)) {
+				src = _config.path + src;
+			}
+
+			if (!utils.endWidth(src, ".html")) {
+				src += ".html";
+			}
+
+			return src;
 		},
 
 		/**
