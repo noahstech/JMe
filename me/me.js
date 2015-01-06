@@ -188,7 +188,6 @@
 		 * @property {String} style - null: 填充（默认） 'pop'：弹出层
 		 */
 		show: function (src, options) {
-			if(_config.mapping && _config.mapping[src]) src = _config.mapping[src];
 			that._log(src, options);
 			that._setTitle(options);
 
@@ -562,10 +561,13 @@
 		},
 
 		_getTplSrc: function (src) {
-			_config.path = _config.path || "tpl/";
+			if(_config.route && _config.route[src]) 
+				return _config.route[src];
 
-			if (!utils.startWidth(src, _config.path)) {
-				src = _config.path + src;
+			_config.tplPath = _config.tplPath || "tpl/";
+
+			if (!utils.startWidth(src, _config.tplPath)) {
+				src = _config.tplPath + src;
 			}
 
 			if (!utils.endWidth(src, ".html")) {
