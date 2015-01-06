@@ -31,7 +31,6 @@
 		this._pageList = [];
 		this._readyFnList = [];
 		this._directiveList = [];
-		//this._serviceList = [];
 	};
 
 	obj.prototype = {
@@ -322,6 +321,8 @@
 		 * @private
 		 */
 		_buildCtrl: function () {
+			if (!_ctrlList) return;
+
 			for (var i = 0; i < _ctrlList.length; i++) {
 				var ctrl = _ctrlList[i];
 
@@ -337,7 +338,9 @@
 		 * @param {Function} fn - 入口函数
 		 */
 		_appendCtrl: function (ctrlName, fn) {
-			_ctrlList = _ctrlList || [];
+			if (angular.version.minor < 3) return;
+
+			_ctrlList || (_ctrlList = []);
 			_ctrlList.push({
 				name: ctrlName,
 				fn: fn
@@ -394,7 +397,7 @@
 			var curPageObj = that._getLastPage(true);
 			that._cleanCtrl();
 
-			// 出发hide事件
+			// 触发hide事件
 			that._triggerEvent(curPageObj, "hide", that._hideParam ? [that._hideParam] : null);
 			that._hideParam = null;
 
@@ -556,7 +559,7 @@
 		_attachEvent: function (pageObj) {
 			pageObj.on = function (ename, callback) {
 				if (typeof (callback) != "function") return;
-				this._eventMap = this._eventMap || {};
+				this._eventMap || (this._eventMap = {});
 				this._eventMap[ename] = callback;
 				return this;
 			}
