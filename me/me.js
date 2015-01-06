@@ -1,4 +1,4 @@
-;(function () {
+; (function () {
 	var utils = (function () {
 		var isIOS = !!navigator.userAgent.match(/(i[^;]+\;(U;)? CPU.+Mac OS X)/);
 
@@ -24,8 +24,7 @@
 		return _utils;
 	})();
 
-	var that, _scope, _compile, _location, _config, _container, _animateOptions;
-	var _http;
+	var that, _scope, _http, _compile, _location, _config, _container, _animateOptions, _ctrlList;
 	var obj = function () {
 		that = this;
 
@@ -40,7 +39,7 @@
 		 * me主入口
 		 * @function ctrl
 		 */
-		ctrl: function ($rootScope, $scope, $compile, $location,$http) {
+		ctrl: function ($rootScope, $scope, $compile, $location, $http) {
 			_scope = $scope;
 			_compile = $compile;
 			_location = $location;
@@ -59,21 +58,21 @@
 		 * 请求网络数据
 		 * @function ajax
 		 * @param {Object} option - 请求参数
+		 * @property {String} method - post或者get
+		 * @property {String} url - 请求的http链接
+		 * @property {Object} data - post请求时的参数，json格式
 		 * @param {function} success - 成功回调函数
 		 * @param {function} failure - 失败回调函数
 	     * @param {function} before - 调用前准备函数
 		 */
-		ajax:function (option,success,failure,before) {
-			if(before && typeof(before) == 'function')before();
+		ajax: function (option, success, failure, before) {
+			if (before && typeof (before) == 'function') before();
 
 			_http(option).success(function (data) {
-				
-				if(success && typeof(success) == 'function')success(data);
-
+				if (typeof success == 'function') success(data);
 			}).error(function (msg, status) {
-
-				console.log('me ajax callback error | msg='+msg+'\r\n\tstatus='+status);
-				if(failure && typeof(failure) == 'function')failure(msg,status);
+				console.log('me ajax callback error | msg=' + msg + '\r\n\tstatus=' + status);
+				if (typeof failure == 'function') failure(msg, status);
 			});
 		},
 
@@ -152,12 +151,9 @@
 		 */
 		run: function (appName, plugins) {
 			that._module = angular.module(appName, plugins);
-
+			that._appendCtrl("me", that.ctrl);
+			that._buildCtrl();
 			that._buildDirective();
-
-			//for (var i = 0; i < that._serviceList.length; i++) {
-			//	that._module.factory(that._serviceList[i].name, that._serviceList[i].fn);
-			//}
 		},
 
 		/**
@@ -316,7 +312,36 @@
 				return new obj();
 			})();
 
+			that._appendCtrl(ctrlName, window[ctrlName].ctrl);
 			return window[ctrlName];
+		},
+
+		/**
+		 * 构建controller
+		 * @function _buildCtrl
+		 * @private
+		 */
+		_buildCtrl: function () {
+			for (var i = 0; i < _ctrlList.length; i++) {
+				var ctrl = _ctrlList[i];
+
+				that._module.controller(ctrl.name + ".ctrl", ctrl.fn);
+			}
+		},
+
+		/**
+		 * 存储controller列表
+		 * @function _appendCtrl
+		 * @private
+		 * @param {String} ctrlName - controller名称
+		 * @param {Function} fn - 入口函数
+		 */
+		_appendCtrl: function (ctrlName, fn) {
+			_ctrlList = _ctrlList || [];
+			_ctrlList.push({
+				name: ctrlName,
+				fn: fn
+			});
 		},
 
 		/**
