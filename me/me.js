@@ -560,14 +560,20 @@
 			return page;
 		},
 
+		/**
+		 * 获取模板路径
+		 * @function _getTplSrc
+		 * @private
+		 * @param {String} src - route名称 | 相对路径 | 绝对路径
+		 */
 		_getTplSrc: function (src) {
 			if(_config.route && _config.route[src]) 
 				return _config.route[src];
 
-			_config.tplPath = _config.tplPath || "tpl/";
+			_config.path = _config.path || "tpl/";
 
-			if (!utils.startWidth(src, _config.tplPath)) {
-				src = _config.tplPath + src;
+			if (!utils.startWidth(src, _config.path)) {
+				src = _config.path + src;
 			}
 
 			if (!utils.endWidth(src, ".html")) {
