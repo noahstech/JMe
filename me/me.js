@@ -1,8 +1,8 @@
 /**
  * 魔法师
+ * @version 1.0
  * @module me
  * @namespace me
- * @version 1.0
  */
 ;var me = function (src, options) {
 	me.show(src, options);
@@ -49,6 +49,8 @@
 			}
 		}
 	}
+
+	if (window.navigator.userAgent.indexOf("Chrome") >= 0) console.log("%c" + decodeURIComponent("%E9%AD%94%E6%B3%95%E5%B8%88%E7%BB%9F%E6%B2%BB%E4%BA%86%E8%BF%99%E5%9D%97%E5%A4%A7%E9%99%86"), " text-shadow: 0 1px 0 #ccc,0 2px 0 #c9c9c9,0 3px 0 #bbb,0 4px 0 #b9b9b9,0 5px 0 #aaa,0 6px 1px rgba(0,0,0,.1),0 0 5px rgba(0,0,0,.1),0 1px 3px rgba(0,0,0,.3),0 3px 5px rgba(0,0,0,.2),0 5px 10px rgba(0,0,0,.25),0 10px 10px rgba(0,0,0,.2),0 20px 20px rgba(0,0,0,.15);font-size:5em");
 })(me);
 
 /*
@@ -111,9 +113,11 @@
 		 * @param {Object} cf - 配置参数
 		 * @property {String} main - 默认打开的页面
 		 * @property {String} container - 根元素的jQuery选择器
-		 * @property {String} hideSelector - 当showType = 1 打开页面的时候，需要隐藏的元素选择器，返回到一级页面时，会重新显示
-		 * @property {String} path - 模板所在的路径，默认为tpl/
-		 * @property {Object} route - 路由配置表，key-value形式，配置后可以在me.show的时候传入key寻找页面
+		 * @property {String} hideSelector 
+		 *		当showType = 1 打开页面的时候，需要隐藏的元素选择器，返回到一级页面时，会重新显示
+		 * @property {String} [path='tpl/'] - 模板所在的路径
+		 * @property {Object} route 
+		 *		路由配置表，key-value形式，配置后可以在me.show的时候传入key寻找页面
 		 */
 		config: function (cf) {
 			$._param.config = cf
@@ -213,10 +217,10 @@
 		 * @param {String} src - 页面src
 		 * @param {Object} options - 参数
 		 * @property {Number} showType - 页面类型，0：一级页面 1：非一级页面
-		 * @property {Object} param - 传递的参数参数
-		 * @property {String} title - 页面标题
-		 * @property {Boolean} refresh - 是否立即渲染ui
-		 * @property {String} style - null: 填充（默认） 'pop'：弹出层
+		 * @property {Object} [param=null] - 传递的参数参数
+		 * @property {String} [title=document.title] - 页面标题
+		 * @property {Boolean} [refresh=false] - 是否自动触发$scope.$apply()
+		 * @property {String} [style=null] - null: 填充（默认） 'pop'：弹出层
 		 */
 		show: function (src, options) {
 			$._method._log(src, options);
@@ -286,7 +290,7 @@
 		},
 
 		/**
-		 * 执行顶层页面注册的事件
+		 * 执行当前页面注册的事件
 		 * @function trigger
 		 * @memberof me
 		 * @param {String} ename - 事件名称
