@@ -1,8 +1,8 @@
 /**
  * 魔法师
- * @version 1.0
  * @module me
  * @namespace me
+ * @version 1.0
  */
 ;var me = function (src, options) {
 	me.show(src, options);
@@ -469,8 +469,8 @@
 			$._method._cleanCtrl();
 
 			// 触发hide事件
-			$._method._triggerEvent(curPageObj, "hide", $._param._hideParam ? [$._param._hideParam] : null);
-			$._param._hideParam = null;
+			$._method._triggerEvent(curPageObj, "hide", $._param.hideParam != null ? [$._param.hideParam] : null);
+			$._param.hideParam = null;
 
 			jQuery("#" + curPageObj.id).remove();
 
