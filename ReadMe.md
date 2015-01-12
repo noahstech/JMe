@@ -2,7 +2,7 @@
 
 基于[AngularJS](https://angularjs.org/)的前端框架，极大提高前端开发的效率，适用于任何前端项目
 
-##使用方法
+##5分钟上手
 
 1.页面必须引用[jQuery](http://jquery.com/) ,[AngularJS](https://angularjs.org/) ，以及`me.js`
 
