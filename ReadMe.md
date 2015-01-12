@@ -1,6 +1,6 @@
 ##JMe描述
 
-`JMe`是一款基于[jQuery](http://jquery.com/) , [AngularJS](https://angularjs.org/)为基础的单页面网站框架库
+基于[AngularJS](https://angularjs.org/)的前端框架，目的是为了提高前端开发的效率，适用于任何前端项目
 
 ##使用方法
 
@@ -11,8 +11,9 @@
     <html xmlns:ng="http://angularjs.org" id="ng-app" ng-app="meApp">
 		<head>
 			<title>me 测试页面</title>
+			<script src="js/jquery-2.0.2.min.js"></script>
 			<script src="js/angular1.3.8.min.js"></script>
-			<script src="js/me.js"></script>
+			<script src="js/me-1.0.js"></script>
 			<script src="js-ctrl/a.js"></script>
 			<script src="js-ctrl/b.js"></script>
 
@@ -26,17 +27,17 @@
 		<body ng-controller="me.ctrl">
 			<div id="me_body"></div>
 		</body>
-		<script>me.run("meApp", []);</script>
 	</html>
+	<script>me.run("meApp", []);</script>
 
-3.创建子页面`a.html`
+3.创建子页面`tpl/a.html`
 
 	<div ng-controller="a.ctrl">
 		<h1>这是a页面</h1>
 		<button ng-click="showB()">打开b页面</button>
 	</div>
 
-4.创建子页面a的控制器`a.js`
+4.创建子页面a的控制器`js-ctrl/a.js`
 
 	me.define("a",{
 		ctrl: function(){
@@ -50,14 +51,14 @@
 		}
 	});
 
-5.创建子页面`b.html`
+5.创建子页面`tpl/b.html`
 
 	<div ng-controller="b.ctrl">
 		<h1>这是b页面</h1>
 		<button ng-click="hide()">返回a页面</button>
 	</div>
 
-6.创建子页面b的控制器'b.js'
+6.创建子页面b的控制器'js-ctrl/b.js'
 
 	me.define("b",{
 		ctrl: function(){
