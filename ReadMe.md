@@ -19,29 +19,51 @@
 
 2.创建框架页面`index.html`，并在html标签中添加id&ng-app属性 
 
-    <html xmlns:ng="http://angularjs.org" id="ng-app" ng-app="AngularApp"> 
+    <html xmlns:ng="http://angularjs.org" id="ng-app" ng-app="meApp"> 
 
 3.页面底部添加Javascript代码（确保所有script和dom都加载完成） 后面的ngSanitize参数是第三方插件，这里不解释了。
 
-	me.run('AngularApp', ['ngSanitize']);
+	me.run('meApp', [/* angular插件 */]);
 
-4.在页面body标签中添加controller
+4.在页面标签中添加controller，一般添加在body上，如下设置后，意味着me将接管该标签
 
-	<body ng-controller="me.ctrl"></body>
+	<body ng-controller="me.ctrl">
+		<div id="main_body"></div>
+	</body>
 
-5.配置`me.config.js` 
+5.配置`me.config.js`
 
 	me.config({
 		container: "#main_body",
-		main: "tpl/content.html"
+		main: "tpl/content.html",
+		path: "tpl/"
 	});
 
 6.配置`me.global.js`
 
 	me.ready(function () {
-		me.$scope.globalData = {};
-		me.$scope.globalMethod = {};
+		me.global({
+			key: "value",
+
+			methodName: functino() {
+				// ...
+			},
+
+			// ...其他全局函数或属性
+		});
 	});
+
+调用全局属性或函数
+
+	me.global.key
+
+或者
+
+	me.global.methodName()
+
+在html里，可以这样
+
+	global.methodName()
 
 7.编写内容页面`content.html`
 
@@ -54,7 +76,9 @@
 
 	(function(){
 		var that = me.define("ControllerName",{
-			ctrl:function(){//ctrl方法必须实现；相应控制器页面加载后调用
+
+			//ctrl方法必须实现；相应控制器页面加载后调用
+			ctrl:function(){
 				//...
 				that.init();
 			},
@@ -66,8 +90,9 @@
 	})()
 	
 
-9.我们可以打开浏览器查看了！
+9.打开浏览器可以看到如下内容
 
+`Hello world!`
 
 ##结束语
 
