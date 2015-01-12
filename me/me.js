@@ -20,11 +20,15 @@
 			document.title = title;
 			if (!isIOS) return;
 
-			var iframe = jQuery('<iframe src="/favicon.ico" style="display:none;"></iframe>').on('load', function () {
-				setTimeout(function () {
-					iframe.off('load').remove();
-				}, 0)
-			}).appendTo(jQuery('body'))
+			var iframe = document.createElement("iframe");
+			iframe.src = "/favicon.ico";
+			iframe.style.display = "none";
+			iframe.onload = function () {
+				try {
+					document.body.removeChild(iframe);
+				} catch (e) { }
+			}
+			document.body.appendChild(iframe);
 		},
 
 		getQueryString: function (name) {
@@ -32,6 +36,14 @@
 			var r = window.location.search.substr(1).match(reg);
 			if (r != null) return unescape(r[2]);
 			return "";
+		},
+
+		each: function (array, fn) {
+			if (!(array instanceof Array)) return;
+
+			for (var i = 0; i < array.length; i++) {
+				fn.call(this, array[i], i);
+			}
 		},
 
 		endWith: function (str, end) {
@@ -47,10 +59,35 @@
 			for (var i in newObj) {
 				obj[i] = newObj[i];
 			}
+		},
+
+		loadScript: function (scriptId, src, callback) {
+			//if (document.getElementById(scriptId)) return;
+
+			//var oJs = document.createElement('script');
+			//oJs.id = scriptId;
+			//oJs.setAttribute("type", "text/javascript");
+			//oJs.setAttribute("src", src);
+			//oJs.onload = function () {
+			//	if (typeof callback == "function") callback();
+			//}
+			//document.getElementsByTagName("head")[0].appendChild(oJs);
+			document.writeln("<script src='" + src + "'></script>");
+		},
+
+		loadStyle: function (styleId, src) {
+			//if (document.getElementById(styleId)) return;
+
+			//var oCss = document.createElement("link");
+			//oCss.id = styleId;
+			//oCss.setAttribute("rel", "stylesheet");
+			//oCss.setAttribute("type", "text/css");
+			//oCss.setAttribute("href", src);
+			//document.getElementsByTagName("head")[0].appendChild(oCss);
+
+			document.writeln('<link href="' + src + '" rel="stylesheet" />')
 		}
 	}
-
-	if (window.navigator.userAgent.indexOf("Chrome") >= 0) console.log("%c" + decodeURIComponent("%E9%AD%94%E6%B3%95%E5%B8%88%E7%BB%9F%E6%B2%BB%E4%BA%86%E8%BF%99%E5%9D%97%E5%A4%A7%E9%99%86"), " text-shadow: 0 1px 0 #ccc,0 2px 0 #c9c9c9,0 3px 0 #bbb,0 4px 0 #b9b9b9,0 5px 0 #aaa,0 6px 1px rgba(0,0,0,.1),0 0 5px rgba(0,0,0,.1),0 1px 3px rgba(0,0,0,.3),0 3px 5px rgba(0,0,0,.2),0 5px 10px rgba(0,0,0,.25),0 10px 10px rgba(0,0,0,.2),0 20px 20px rgba(0,0,0,.15);font-size:5em");
 })(me);
 
 /*
@@ -112,7 +149,7 @@
 		 * @memberof me
 		 * @param {Object} cf - 配置参数
 		 * @property {String} main - 默认打开的页面
-		 * @property {String} container - 根元素的jQuery选择器
+		 * @property {String} container - 根元素的css选择器
 		 * @property {String} hideSelector 
 		 *		当showType = 1 打开页面的时候，需要隐藏的元素选择器，返回到一级页面时，会重新显示
 		 * @property {String} [path='tpl/'] - 模板所在的路径
@@ -123,17 +160,27 @@
 			$._param.config = cf
 		},
 
-		plugins: function (pluginMap) {
+		/**
+		 * 注册页面插件，在me.show的时候，第一个参数可以直接写插件的名称
+		 * 注册的插件在me初始化的时候会加载到页面，暂时不支持跨域
+		 * @function plugin
+		 * @memberof me
+		 * @param {Array} pluginList - 插件配置列表
+		 * @property {String} name - 插件名称
+		 * @property {String} src - 插件页面的路径
+		 * @property {Array} css 
+		 *		插件相关的css样式src数组，可以是相对路径或绝对路径，如["http://xxx.css", "folder/xxx.css", ...]
+		 * @property {Array} 插件相关的js路径数组，格式同css 
+		 */
+		plugin: function (pluginList) {
+			if (!angular.isArray(pluginList)) return;
 
+			$._param.plugins = $._param.plugins || {};
+			$.utils.each(pluginList, function (plugin) {
+				$._param.plugins[plugin.name] = plugin;
+				$._method._loadPlugin(plugin.name);
+			});
 		},
-
-		// 自定义服务
-		//service: function (svName, fn) {
-		//	that._serviceList.push({
-		//		name: svName,
-		//		fn: fn
-		//	});
-		//},
 
 		/**
 		 * 设置或者获取全局数据，参数可以是一个object，也可以是key,value
@@ -587,8 +634,10 @@
 		 * @param {Object} options - me.show中传入的options对象
 		 */
 		_getPageHtml: function (src, options) {
-			var pageId = "id" + Math.random().toString().substring(2);
-			var page = '<div id="' + pageId + '" ng-include src="\'' + $._method._getTplSrc(src) + '?temp=' + Math.random() + '\'"';
+			var pageId = "id" + Math.random().toString().substring(2),
+				pageSrc = $._method._getTplSrc(src);
+
+			var page = '<div id="' + pageId + '" ng-include src="\'' + pageSrc + '?temp=' + Math.random() + '\'"';
 			//page += that._getShowAniClass(options);
 			page += "></div>";
 
@@ -617,11 +666,44 @@
 		},
 
 		/**
+		 * 加载插件
+		 * @function _loadPlugin
+		 * @param {String} pluginName - 插件名称
+		 * @param {Function} success - 加载成功后的回调
+		 */
+		_loadPlugin: function (pluginName, success) {
+			var plugin = $._param.plugins[pluginName];
+
+			$.utils.each(plugin.css, function (src, index) {
+				$.utils.loadStyle(pluginName + "_css_" + index, src);
+			});
+
+			if (!angular.isArray(plugin.js) || plugin.js.length == 0) {
+				if (typeof success == "function") success();
+			} else {
+				var count = 0;
+				$.utils.each(plugin.js, function (src, index) {
+					$.utils.loadScript(pluginName + "_js_" + index, src, function () {
+						count++;
+
+						if (count == plugin.js.length) {
+							if (typeof success == "function") success();
+						}
+					});
+				});
+			}
+		},
+
+		/**
 		 * 获取模板路径
 		 * @function _getTplSrc
-		 * @param {String} src - route名称 | 相对路径 | 绝对路径
+		 * @param {String} src - 插件名称 | route名称 | 相对路径 | 绝对路径
 		 */
 		_getTplSrc: function (src) {
+			if ($._param.plugins && src in $._param.plugins) {
+				return $._param.plugins[src].src;
+			}
+
 			var config = $._param.config;
 			if (config.route && config.route[src])
 				return config.route[src];
@@ -742,4 +824,6 @@
 			$.utils.setTitle(options.title);
 		}
 	};
+
+	if (window.navigator.userAgent.indexOf("Chrome") >= 0) console.log("%cME", " text-shadow: 0 1px 0 #ccc,0 2px 0 #c9c9c9,0 3px 0 #bbb,0 4px 0 #b9b9b9,0 5px 0 #aaa,0 6px 1px rgba(0,0,0,.1),0 0 5px rgba(0,0,0,.1),0 1px 3px rgba(0,0,0,.3),0 3px 5px rgba(0,0,0,.2),0 5px 10px rgba(0,0,0,.25),0 10px 10px rgba(0,0,0,.2),0 20px 20px rgba(0,0,0,.15);font-size:8em");
 })(me);
