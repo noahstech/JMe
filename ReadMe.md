@@ -1,6 +1,6 @@
 ##JMe描述
 
-基于[AngularJS](https://angularjs.org/)的前端框架，目的是为了提高前端开发的效率，适用于任何前端项目
+基于[AngularJS](https://angularjs.org/)的前端框架，极大提高前端开发的效率，适用于任何前端项目
 
 ##使用方法
 
@@ -46,7 +46,10 @@
 
 		showB: function(){
 			me.show("tpl/b.html", {
-				showType: 1
+				showType: 1,
+				param: "传到b页面的参数"
+			}).on("hide", function(hideParam){
+				console.log(hideParam);
 			});
 		}
 	});
@@ -55,14 +58,20 @@
 
 	<div ng-controller="b.ctrl">
 		<h1>这是b页面</h1>
-		<button ng-click="hide()">返回a页面</button>
+		<button ng-click="back()">返回a页面</button>
 	</div>
 
 6.创建子页面b的控制器'js-ctrl/b.js'
 
 	me.define("b",{
 		ctrl: function(){
-			// b初始化函数
+			// 获取从a传来的参数
+			console.log(me.param());
+		},
+
+		back: function() {
+			// 关闭页面b时，返回参数给a
+			me.hide("返回的参数");
 		}
 	});
 
