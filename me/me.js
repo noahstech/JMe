@@ -94,6 +94,7 @@
  * angular入口函数
  */
 (function ($) {
+	location.hash = "/";
 	$.utils.extend($, {
 		ctrl: function ($rootScope, $scope, $compile, $location, $http) {
 			$.ngobj = {
