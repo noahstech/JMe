@@ -61,7 +61,7 @@
 		<button ng-click="back()">返回a页面</button>
 	</div>
 
-6.创建子页面b的控制器'js-ctrl/b.js'
+6.创建子页面b的控制器`js-ctrl/b.js`
 
 	me.define("b",{
 		ctrl: function(){
