@@ -295,18 +295,15 @@ var Weixin = (function () {
 			});
 		},
 
-		playVoice: function (localId, serverId, onVoicePlayEndCallback) {
+		playVoice: function (localId, onVoicePlayEndCallback) {
 			if (typeof (onVoicePlayEndCallback) == 'function') {
 				wx.onVoicePlayEnd({
-					serverId: serverId, // 需要下载的音频的服务器端ID，由uploadVoice接口获得
-					success: function (res) {
+					complete: function (res) {
 						var localId = res.localId; // 返回音频的本地ID
-						if (typeof (callback) == 'function')
-							callback(localId);
+						onVoicePlayEndCallback(localId);
 					}
 				});
 			}
-
 			wx.playVoice({
 				localId: localId // 需要播放的音频的本地ID，由stopRecord接口获得
 			});
@@ -380,10 +377,9 @@ var Weixin = (function () {
 				success: function (res) {
 					var lon = res.longitude; // 纬度，浮点数，范围为90 ~ -90
 					var lat = res.latitude; // 经度，浮点数，范围为180 ~ -180。
-					var speed = res.speed; // 速度，以米/每秒计
 					var accuracy = res.accuracy; // 位置精度
 					if (typeof (callback) == 'function')
-						callback(lon, lat, speed, accuracy);
+						callback(lon, lat, accuracy);
 				}
 			});
 		}
