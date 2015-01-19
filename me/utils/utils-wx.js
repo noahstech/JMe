@@ -1,5 +1,5 @@
-var Weixin = (function () {
-	var that;
+(function(){
+	var that ;
 	var networkType = 'undefined';
 	var wx_api_list = ["onMenuShareTimeline",
 						"onMenuShareAppMessage",
@@ -35,113 +35,39 @@ var Weixin = (function () {
 						"addCard",
 						"chooseCard",
 						"openCard"]
-
-	var obj = function (isdebug,appId, timestamp, nonceStr, signature, readyFun) {
-		that = this;
-		that.shareParam = {
-			Title: "",
-			Desc: "",
-			imgUrl: "",
-			Link: "",
-			callback: null,
-			Type: "",
-			DataUrl: ""
-		};
-		var configParam = {
-			debug: isdebug,
-			appId: appId,
-			timestamp: timestamp,
-			nonceStr: nonceStr,
-			signature: signature,
-			jsApiList: wx_api_list
+	/*
+     * options = {debug,appId,timestamp,signature}
+	 */
+	var Weixin = function (options) {
+		if(!'wx' in window){
+			throw new Error("请先引用微信官方js");
 		}
-		wx.config(configParam);
+
+		that = this;
+		that._eventMap = {};
+		that.shareParam = {};
+
+		options.jsApiList = wx_api_list;
+		wx.config(options);
 
 		wx.ready(function () {
-			that._initShare();
 			that._getNetworkType();
-			if (typeof (readyFun) == 'function')
-				readyFun();
 		});
 
 		wx.error(function (res) {
 			alert(JSON.stringify(res));
 		});
+
+		return that;
 	};
 
-	obj.prototype = {
-		/*网络*/
-		_getNetworkType: function () {
-			wx.getNetworkType({
-				success: function (res) {
-					networkType = res.networkType; // 返回网络类型2g，3g，4g，wifi
-				}
-			});
+	Weixin.prototype = {
+		on:function(ename,callback){
+			if (typeof (callback) != "function") return;
+				that._eventMap || (that._eventMap = {});
+				that._eventMap[ename] = callback;
+				return that;
 		},
-		/*分享*/
-		_initShare: function () {
-			wx.onMenuShareTimeline({
-				title: that.shareParam.Title, // 分享标题
-				link: that.shareParam.Link, // 分享链接
-				imgUrl: that.shareParam.ImgUrl, // 分享图标
-				success: function (res) {
-					if (that.shareParam.callback && typeof (that.shareParam.callback) == 'function')
-						that.shareParam.callback(res);
-				},
-				cancel: function (res) {
-					if (that.shareParam.callback && typeof (that.shareParam.callback) == 'function')
-						that.shareParam.callback(res);
-				}
-			});
-
-			wx.onMenuShareAppMessage({
-				title: that.shareParam.Title, // 分享标题
-				desc: that.shareParam.Desc, // 分享描述
-				link: that.shareParam.Link, // 分享链接
-				imgUrl: that.shareParam.ImgUrl, // 分享图标
-				type: that.shareParam.Type, // 分享类型,music、video或link，不填默认为link
-				dataUrl: that.shareParam.DataUrl, // 如果type是music或video，则要提供数据链接，默认为空
-				success: function (res) {
-					if (that.shareParam.callback && typeof (that.shareParam.callback) == 'function')
-						that.shareParam.callback(res);
-				},
-				cancel: function (res) {
-					if (that.shareParam.callback && typeof (that.shareParam.callback) == 'function')
-						that.shareParam.callback(res);
-				}
-			});
-
-			wx.onMenuShareQQ({
-				title: that.shareParam.Title, // 分享标题
-				desc: that.shareParam.Desc, // 分享描述
-				link: that.shareParam.Link, // 分享链接
-				imgUrl: that.shareParam.ImgUrl, // 分享图标
-				success: function (res) {
-					if (that.shareParam.callback && typeof (that.shareParam.callback) == 'function')
-						that.shareParam.callback(res);
-				},
-				cancel: function (res) {
-					if (that.shareParam.callback && typeof (that.shareParam.callback) == 'function')
-						that.shareParam.callback(res);
-				}
-			});
-
-			wx.onMenuShareWeibo({
-				title: that.shareParam.Title, // 分享标题
-				desc: that.shareParam.Desc, // 分享描述
-				link: that.shareParam.Link, // 分享链接
-				imgUrl: that.shareParam.ImgUrl, // 分享图标
-				success: function (res) {
-					if (that.shareParam.callback && typeof (that.shareParam.callback) == 'function')
-						that.shareParam.callback(res);
-				},
-				cancel: function (res) {
-					if (that.shareParam.callback && typeof (that.shareParam.callback) == 'function')
-						that.shareParam.callback(res);
-				}
-			});
-		},
-
 
 		setShareParam: function (shareParam) {
 			that.shareParam = shareParam;
@@ -382,8 +308,79 @@ var Weixin = (function () {
 						callback(lon, lat, accuracy);
 				}
 			});
-		}
+		},
 
+		/*网络*/
+		_getNetworkType: function () {
+			wx.getNetworkType({
+				success: function (res) {
+					networkType = res.networkType; // 返回网络类型2g，3g，4g，wifi
+				}
+			});
+		},
+		/*分享*/
+		_initShare: function () {
+			wx.onMenuShareTimeline({
+				title: that.shareParam.Title, // 分享标题
+				link: that.shareParam.Link, // 分享链接
+				imgUrl: that.shareParam.ImgUrl, // 分享图标
+				success: function (res) {
+					if (that.shareParam.callback && typeof (that.shareParam.callback) == 'function')
+						that.shareParam.callback(res);
+				},
+				cancel: function (res) {
+					if (that.shareParam.callback && typeof (that.shareParam.callback) == 'function')
+						that.shareParam.callback(res);
+				}
+			});
+
+			wx.onMenuShareAppMessage({
+				title: that.shareParam.Title, // 分享标题
+				desc: that.shareParam.Desc, // 分享描述
+				link: that.shareParam.Link, // 分享链接
+				imgUrl: that.shareParam.ImgUrl, // 分享图标
+				type: that.shareParam.Type, // 分享类型,music、video或link，不填默认为link
+				dataUrl: that.shareParam.DataUrl, // 如果type是music或video，则要提供数据链接，默认为空
+				success: function (res) {
+					if (that.shareParam.callback && typeof (that.shareParam.callback) == 'function')
+						that.shareParam.callback(res);
+				},
+				cancel: function (res) {
+					if (that.shareParam.callback && typeof (that.shareParam.callback) == 'function')
+						that.shareParam.callback(res);
+				}
+			});
+
+			wx.onMenuShareQQ({
+				title: that.shareParam.Title, // 分享标题
+				desc: that.shareParam.Desc, // 分享描述
+				link: that.shareParam.Link, // 分享链接
+				imgUrl: that.shareParam.ImgUrl, // 分享图标
+				success: function (res) {
+					if (that.shareParam.callback && typeof (that.shareParam.callback) == 'function')
+						that.shareParam.callback(res);
+				},
+				cancel: function (res) {
+					if (that.shareParam.callback && typeof (that.shareParam.callback) == 'function')
+						that.shareParam.callback(res);
+				}
+			});
+
+			wx.onMenuShareWeibo({
+				title: that.shareParam.Title, // 分享标题
+				desc: that.shareParam.Desc, // 分享描述
+				link: that.shareParam.Link, // 分享链接
+				imgUrl: that.shareParam.ImgUrl, // 分享图标
+				success: function (res) {
+					if (that.shareParam.callback && typeof (that.shareParam.callback) == 'function')
+						that.shareParam.callback(res);
+				},
+				cancel: function (res) {
+					if (that.shareParam.callback && typeof (that.shareParam.callback) == 'function')
+						that.shareParam.callback(res);
+				}
+			});
+		},
 	}
-	return obj;
 })()
+
