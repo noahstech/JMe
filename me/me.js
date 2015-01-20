@@ -1,5 +1,5 @@
 /**
- * 魔法师
+ * 没蓝了
  * @module me
  * @namespace me
  * @version 1.0
@@ -413,12 +413,27 @@
 
 			$._method._appendCtrl(ctrlName, window[ctrlName].ctrl);
 			return window[ctrlName];
+		},
+
+		/**
+		 * 获取当前页面的控制器对象
+		 * @function control
+		 * @memberof me
+		 */
+		control: function () {
+			var ctrlString = $._method._getContainer().find("> div:last > [ng-controller]").attr("ng-controller"),
+				ctrlName = ctrlString ? ctrlString.split(".")[0] : "";
+
+			return ctrlName ? window[ctrlName] : { };
 		}
 	});
 })(me);
 
 /*
- * 私有变量
+ * 私人空间
+ * @module _method
+ * @memberof me
+ * @private
  */
 (function ($) {
 	$._param = {
@@ -432,15 +447,7 @@
 		directiveList: [],
 		module: null
 	};
-})(me);
 
-/*
- * 私有函数
- * @module _method
- * @memberof me
- * @private
- */
-(function ($) {
 	$._method = {
 		/**
 		 * 构建controller
@@ -601,8 +608,6 @@
 		 * @function _init
 		 */
 		_init: function () {
-			$.ngobj.$location.hash("");
-
 			var startPageName = $.utils.getQueryString("p");
 			if (startPageName) {
 				$.show(startPageName, { showType: 0 });
