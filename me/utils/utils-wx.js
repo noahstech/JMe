@@ -203,19 +203,24 @@ document.write('<scr'+'ipt src="http://res.wx.qq.com/open/js/jweixin-1.0.0.js"><
 
 		that = this;
 		that._eventMap = {};
-		that._paramMap = {};
 		that.shareParam = {};
 		that.readyList = [];
 	};
 
 	obj.prototype = {
-		// on: function (ename, callback, param) {
-		// 	if (typeof (callback) != "function") return;
-		// 	that._eventMap || (that._eventMap = {});
-		// 	that._eventMap[ename] = callback;
-		// 	that._paramMap[ename] = param;
-
-		// },
+		/**
+		 * 分享回调监听
+		 * @function on
+		 * @param {String} ename - 事件名称  
+		 * @property ename 支持事件名称[onShareTimeline,onShareAppMessage,onShareQQ,onShareWeibo]
+		 * @param {function} callback - 回调触发事件
+		 */
+		on: function (ename, callback) {
+			if (typeof (callback) != "function") return;
+		 	that._eventMap || (that._eventMap = {});
+		 	that._eventMap[ename] = callback;
+		 	return that;
+		},
 
 		/**
 		 * 获取微信版本
@@ -272,11 +277,12 @@ document.write('<scr'+'ipt src="http://res.wx.qq.com/open/js/jweixin-1.0.0.js"><
 		/**
 		 * 设置分享功能
 		 * @function setShareParam
-		 * @param {Object} shareParam - 分享内容
+		 * @param {Object} shareParam - 分享内容 {ShareTitle,ShareDesc,ShareLink,ShareImgUrl,Type，DataUrl,callback}
 		 */
 		setShareParam: function (shareParam) {
 			that.shareParam = shareParam;
 			that._initShare();
+			return that;
 		},
 
 		/**
@@ -706,12 +712,22 @@ document.write('<scr'+'ipt src="http://res.wx.qq.com/open/js/jweixin-1.0.0.js"><
 				link: that.shareParam.ShareLink, // 分享链接
 				imgUrl: that.shareParam.ShareImgUrl, // 分享图标
 				success: function (res) {
+
+					if(that._eventMap["onShareTimeline"] && typeof(that._eventMap["onShareTimeline"]) == 'function'){
+						that._eventMap["onShareTimeline"](true);
+					}
+
 					if (that.shareParam.callback && typeof (that.shareParam.callback) == 'function')
-						that.shareParam.callback(res);
+						that.shareParam.callback(true);
 				},
 				cancel: function (res) {
+
+					if(that._eventMap["onShareTimeline"] && typeof(that._eventMap["onShareTimeline"]) == 'function'){
+						that._eventMap["onShareTimeline"]();
+					}
+
 					if (that.shareParam.callback && typeof (that.shareParam.callback) == 'function')
-						that.shareParam.callback(res);
+						that.shareParam.callback();
 				}
 			});
 		},
@@ -730,12 +746,20 @@ document.write('<scr'+'ipt src="http://res.wx.qq.com/open/js/jweixin-1.0.0.js"><
 				type: that.shareParam.Type, // 分享类型,music、video或link，不填默认为link
 				dataUrl: that.shareParam.DataUrl, // 如果type是music或video，则要提供数据链接，默认为空
 				success: function (res) {
+					if(that._eventMap["onShareAppMessage"] && typeof(that._eventMap["onShareAppMessage"]) == 'function'){
+						that._eventMap["onShareAppMessage"](true);
+					}
+
 					if (that.shareParam.callback && typeof (that.shareParam.callback) == 'function')
-						that.shareParam.callback(res);
+						that.shareParam.callback(true);
 				},
 				cancel: function (res) {
+					if(that._eventMap["onShareAppMessage"] && typeof(that._eventMap["onShareAppMessage"]) == 'function'){
+						that._eventMap["onShareAppMessage"]();
+					}
+
 					if (that.shareParam.callback && typeof (that.shareParam.callback) == 'function')
-						that.shareParam.callback(res);
+						that.shareParam.callback();
 				}
 			});
 		},
@@ -752,12 +776,20 @@ document.write('<scr'+'ipt src="http://res.wx.qq.com/open/js/jweixin-1.0.0.js"><
 				link: that.shareParam.ShareLink, // 分享链接
 				imgUrl: that.shareParam.ShareImgUrl, // 分享图标
 				success: function (res) {
+					if(that._eventMap["onShareQQ"] && typeof(that._eventMap["onShareQQ"]) == 'function'){
+						that._eventMap["onShareQQ"](true);
+					}
+
 					if (that.shareParam.callback && typeof (that.shareParam.callback) == 'function')
-						that.shareParam.callback(res);
+						that.shareParam.callback(true);
 				},
 				cancel: function (res) {
+					if(that._eventMap["onShareQQ"] && typeof(that._eventMap["onShareQQ"]) == 'function'){
+						that._eventMap["onShareQQ"]();
+					}
+
 					if (that.shareParam.callback && typeof (that.shareParam.callback) == 'function')
-						that.shareParam.callback(res);
+						that.shareParam.callback();
 				}
 			});
 		},
@@ -774,12 +806,20 @@ document.write('<scr'+'ipt src="http://res.wx.qq.com/open/js/jweixin-1.0.0.js"><
 				link: that.shareParam.ShareLink, // 分享链接
 				imgUrl: that.shareParam.ShareImgUrl, // 分享图标
 				success: function (res) {
+					if(that._eventMap["onShareWeibo"] && typeof(that._eventMap["onShareWeibo"]) == 'function'){
+						that._eventMap["onShareWeibo"](true);
+					}
+
 					if (that.shareParam.callback && typeof (that.shareParam.callback) == 'function')
-						that.shareParam.callback(res);
+						that.shareParam.callback(true);
 				},
 				cancel: function (res) {
+					if(that._eventMap["onShareWeibo"] && typeof(that._eventMap["onShareWeibo"]) == 'function'){
+						that._eventMap["onShareWeibo"]();
+					}
+
 					if (that.shareParam.callback && typeof (that.shareParam.callback) == 'function')
-						that.shareParam.callback(res);
+						that.shareParam.callback();
 				}
 			});
 		},
