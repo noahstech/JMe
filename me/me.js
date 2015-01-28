@@ -86,6 +86,42 @@
 			//document.getElementsByTagName("head")[0].appendChild(oCss);
 
 			document.writeln('<link href="' + src + '" rel="stylesheet" />')
+		},
+
+		style: function (styleId, cssObj) {
+			if (document.all && document.styleSheets[styleId]) return;
+			if (document.getElementById(styleId)) return;
+
+			var str_css = "";
+
+			if (typeof cssObj == "object") {
+				for (var i in cssObj) {
+					str_css += i + "{";
+					for (var j in cssObj[i]) {
+						str_css += j;
+						if (!this.startWith(i, "@")) str_css += ":";
+						str_css += cssObj[i][j];
+						if (!this.startWith(i, "@")) str_css += ";";
+					}
+					str_css += "}";
+				}
+			} else if (typeof cssObj == "string") {
+				str_css = cssObj;
+			} else {
+				return;
+			}
+
+			if (document.all) {
+				var ss = document.createStyleSheet();
+				ss.owningElement.id = styleId;
+				ss.cssText = str_css;
+			} else {
+				var style = document.createElement("style");
+				style.id = styleId;
+				style.type = "text/css";
+				style.innerHTML = str_css;
+				document.getElementsByTagName("HEAD").item(0).appendChild(style);
+			}
 		}
 	}
 })(me);
