@@ -208,635 +208,635 @@ document.write('<scr' + 'ipt src="http://res.wx.qq.com/open/js/jweixin-1.0.0.js"
 	};
 
 	obj.prototype = {
-		/**
-		 * 分享回调监听
-		 * @function on
-		 * @param {String} ename - 事件名称  
-		 * @property ename 支持事件名称[onShareTimeline,onShareAppMessage,onShareQQ,onShareWeibo]
-		 * @param {function} callback - 回调触发事件
-		 */
-		on: function (ename, callback) {
-			if (typeof (callback) != "function") return;
-			that._eventMap || (that._eventMap = {});
-			that._eventMap[ename] = callback;
-			return that;
-		},
+        /**
+         * 分享回调监听
+         * @function on
+         * @param {String} ename - 事件名称
+         * @property ename 支持事件名称[onShareTimeline,onShareAppMessage,onShareQQ,onShareWeibo]
+         * @param {function} callback - 回调触发事件
+         */
+        on: function (ename, callback) {
+            if (typeof (callback) != "function") return;
+            that._eventMap || (that._eventMap = {});
+            that._eventMap[ename] = callback;
+            return that;
+        },
 
-		/**
-		 * 获取微信版本
-		 * @function version
-		 */
-		version: function () {
-			return weixinVersion;
-		},
+        /**
+         * 获取微信版本
+         * @function version
+         */
+        version: function () {
+            return weixinVersion;
+        },
 
-		/**
-		 * 获取微信版本
-		 * @function config
-		 * @param {boolean} isdebug - 是否开启debug模式
-		 * @param {String} weixinAppId - 微信AppId
-		 * @param {String} timestamp - 时间戳
-		 * @param {String} noncestr - 随机数
-		 * @param {String} signature - 签名 
-		 */
-		config: function (isdebug, weixinAppId, timestamp, noncestr, signature) {
-			wx.ready(function () {
-				that._getNetworkType();
+        /**
+         * 获取微信版本
+         * @function config
+         * @param {boolean} isdebug - 是否开启debug模式
+         * @param {String} weixinAppId - 微信AppId
+         * @param {String} timestamp - 时间戳
+         * @param {String} noncestr - 随机数
+         * @param {String} signature - 签名
+         */
+        config: function (isdebug, weixinAppId, timestamp, noncestr, signature) {
+            wx.ready(function () {
+                that._getNetworkType();
 
-				while (f = _readyList.pop()) {
-					f();
-				}
+                while (f = _readyList.pop()) {
+                    f();
+                }
 
-				that.readyState = true;
-			});
+                that.readyState = true;
+            });
 
-			that._error();
+            that._error();
 
-			wx.config({
-				debug: isdebug,
-				appId: weixinAppId,
-				timestamp: timestamp,
-				nonceStr: noncestr,
-				signature: signature,
-				jsApiList: wx_api_list
-			});
-		},
+            wx.config({
+                debug: isdebug,
+                appId: weixinAppId,
+                timestamp: timestamp,
+                nonceStr: noncestr,
+                signature: signature,
+                jsApiList: wx_api_list
+            });
+        },
 
-		/**
-		 * 注册ready状态完成后执行的方法
-		 * @function ready
-		 * @param {function} isdebug - 是否开启debug模式
-		 */
-		ready: function (fn) {
-			if (that && that.readyState) {
-				fn();
-			} else {
-				_readyList.push(fn);
-			}
-		},
+        /**
+         * 注册ready状态完成后执行的方法
+         * @function ready
+         * @param {function} isdebug - 是否开启debug模式
+         */
+        ready: function (fn) {
+            if (that && that.readyState) {
+                fn();
+            } else {
+                _readyList.push(fn);
+            }
+        },
 
-		/**
-		 * @private
-		 * 注册错误事件监听
-		 * @function _error
-		 */
-		_error: function () {
-			wx.error(function (res) {
-				alert(JSON.stringify(res));
-			});
-		},
+        /**
+         * @private
+         * 注册错误事件监听
+         * @function _error
+         */
+        _error: function () {
+            wx.error(function (res) {
+                alert(JSON.stringify(res));
+            });
+        },
 
-		/**
-		 * 设置分享功能
-		 * @function setShareParam
-		 * @param {Object} shareParam - 分享内容 {ShareTitle,ShareDesc,ShareLink,ShareImgUrl,Type，DataUrl,callback}
-		 */
-		setShareParam: function (shareParam) {
-			that.shareParam = shareParam;
-			that._initShare();
-			return that;
-		},
+        /**
+         * 设置分享功能
+         * @function setShareParam
+         * @param {Object} shareParam - 分享内容 {ShareTitle,ShareDesc,ShareLink,ShareImgUrl,Type，DataUrl,callback}
+         */
+        setShareParam: function (shareParam) {
+            that.shareParam = shareParam;
+            that._initShare();
+            return that;
+        },
 
-		/**
-		 * 获取网络类型
-		 * @function getNetworkType
-		 */
-		getNetworkType: function () {
-			return networkType;
-		},
+        /**
+         * 获取网络类型
+         * @function getNetworkType
+         */
+        getNetworkType: function () {
+            return networkType;
+        },
 
-		/**
-		 * 图片预览
-		 * @function previewImage
-		 * @param {Array} imageUrls - 图片路径
-		 * @param {int} index - 当前显示图片索引,默认0
-		 */
-		previewImage: function (imageUrls, index) {
-			if (!index) index = 0;
-			var currentImg = imageUrls[index];
-			wx.previewImage({
-				current: currentImg,
-				urls: imageUrls
-			})
-		},
+        /**
+         * 图片预览
+         * @function previewImage
+         * @param {Array} imageUrls - 图片路径
+         * @param {int} index - 当前显示图片索引,默认0
+         */
+        previewImage: function (imageUrls, index) {
+            if (!index) index = 0;
+            var currentImg = imageUrls[index];
+            wx.previewImage({
+                current: currentImg,
+                urls: imageUrls
+            })
+        },
 
-		/**
-		 * 选择本地图片
-		 * @function chooseImage
-		 * @param {function} callback - 回调函数，返回本地图片id
-		 */
-		chooseImage: function (callback) {
-			wx.chooseImage({
-				success: function (res) {
-					if (typeof (callback) == 'function')
-						callback(res.localIds);
-				}
-			});
-		},
+        /**
+         * 选择本地图片
+         * @function chooseImage
+         * @param {function} callback - 回调函数，返回本地图片id
+         */
+        chooseImage: function (callback) {
+            wx.chooseImage({
+                success: function (res) {
+                    if (typeof (callback) == 'function')
+                        callback(res.localIds);
+                }
+            });
+        },
 
-		/**
-		 * 上传本地图片
-		 * @function uploadImage
-		 * @param {int} localId - 本地图片id，通过chooseImage获得
-		 * @param {function} callback - 回调函数，返回上传后服务端id
-		 */
-		uploadImage: function (localId, callback) {
-			wx.uploadImage({
-				localId: localId, // 需要上传的图片的本地ID，由chooseImage接口获得
-				isShowProgressTips: 1,// 默认为1，显示进度提示
-				success: function (res) {
-					var serverId = res.serverId; // 返回图片的服务器端ID
-					if (typeof (callback) == 'function')
-						callback(serverId);
-				}
-			});
-		},
+        /**
+         * 上传本地图片
+         * @function uploadImage
+         * @param {int} localId - 本地图片id，通过chooseImage获得
+         * @param {function} callback - 回调函数，返回上传后服务端id
+         */
+        uploadImage: function (localId, callback) {
+            wx.uploadImage({
+                localId: localId, // 需要上传的图片的本地ID，由chooseImage接口获得
+                isShowProgressTips: 1,// 默认为1，显示进度提示
+                success: function (res) {
+                    var serverId = res.serverId; // 返回图片的服务器端ID
+                    if (typeof (callback) == 'function')
+                        callback(serverId);
+                }
+            });
+        },
 
-		/**
-		 * 下载图片
-		 * @function downloadImage
-		 * @param {int} serverId - 服务端图片id，通过uploadImage获得
-		 * @param {function} callback - 回调函数，返回本地图片id
-		 */
-		downloadImage: function (serverId, callback) {
-			wx.downloadImage({
-				serverId: serverId, // 需要下载的图片的服务器端ID，由uploadImage接口获得
-				isShowProgressTips: 1,// 默认为1，显示进度提示
-				success: function (res) {
-					var localId = res.localId; // 返回图片下载后的本地ID
-					if (typeof (callback) == 'function')
-						callback(localId);
-				}
-			});
-		},
+        /**
+         * 下载图片
+         * @function downloadImage
+         * @param {int} serverId - 服务端图片id，通过uploadImage获得
+         * @param {function} callback - 回调函数，返回本地图片id
+         */
+        downloadImage: function (serverId, callback) {
+            wx.downloadImage({
+                serverId: serverId, // 需要下载的图片的服务器端ID，由uploadImage接口获得
+                isShowProgressTips: 1,// 默认为1，显示进度提示
+                success: function (res) {
+                    var localId = res.localId; // 返回图片下载后的本地ID
+                    if (typeof (callback) == 'function')
+                        callback(localId);
+                }
+            });
+        },
 
-		/**
-		 * 关闭窗口
-		 * @function closeWindow
-		 */
-		closeWindow: function () {
-			wx.closeWindow();
-		},
+        /**
+         * 关闭窗口
+         * @function closeWindow
+         */
+        closeWindow: function () {
+            wx.closeWindow();
+        },
 
-		/**
-		 * 关闭菜单按钮
-		 * @function hideOptionMenu
-		 */
-		hideOptionMenu: function () {
-			console.log("hideOptionMenu");
-			wx.hideOptionMenu();
-		},
+        /**
+         * 关闭菜单按钮
+         * @function hideOptionMenu
+         */
+        hideOptionMenu: function () {
+            console.log("hideOptionMenu");
+            wx.hideOptionMenu();
+        },
 
-		/**
-		 * 显示菜单按钮
-		 * @function showOptionMenu
-		 */
-		showOptionMenu: function () {
-			wx.showOptionMenu();
-		},
+        /**
+         * 显示菜单按钮
+         * @function showOptionMenu
+         */
+        showOptionMenu: function () {
+            wx.showOptionMenu();
+        },
 
-		/*
-		基本类
+        /*
+         基本类
 
-		举报: "menuItem:exposeArticle"
-		调整字体: "menuItem:setFont"
-		日间模式: "menuItem:dayMode"
-		夜间模式: "menuItem:nightMode"
-		刷新: "menuItem:refresh"
-		查看公众号（已添加）: "menuItem:profile"
-		查看公众号（未添加）: "menuItem:addContact"
-		传播类
+         举报: "menuItem:exposeArticle"
+         调整字体: "menuItem:setFont"
+         日间模式: "menuItem:dayMode"
+         夜间模式: "menuItem:nightMode"
+         刷新: "menuItem:refresh"
+         查看公众号（已添加）: "menuItem:profile"
+         查看公众号（未添加）: "menuItem:addContact"
+         传播类
 
-		发送给朋友: "menuItem:share:appMessage"
-		分享到朋友圈: "menuItem:share:timeline"
-		分享到QQ: "menuItem:share:qq"
-		分享到Weibo: "menuItem:share:weiboApp"
-		收藏: "menuItem:favorite"
-		分享到FB: "menuItem:share:facebook"
-		保护类
+         发送给朋友: "menuItem:share:appMessage"
+         分享到朋友圈: "menuItem:share:timeline"
+         分享到QQ: "menuItem:share:qq"
+         分享到Weibo: "menuItem:share:weiboApp"
+         收藏: "menuItem:favorite"
+         分享到FB: "menuItem:share:facebook"
+         保护类
 
-		调试: "menuItem:jsDebug"
-		编辑标签: "menuItem:editTag"
-		删除: "menuItem:delete"
-		复制链接: "menuItem:copyUrl"
-		原网页: "menuItem:originPage"
-		阅读模式: "menuItem:readMode"
-		在QQ浏览器中打开: "menuItem:openWithQQBrowser"
-		在Safari中打开: "menuItem:openWithSafari"
-		邮件: "menuItem:share:email"
-		一些特殊公众号: "menuItem:share:brand"
-		*/
+         调试: "menuItem:jsDebug"
+         编辑标签: "menuItem:editTag"
+         删除: "menuItem:delete"
+         复制链接: "menuItem:copyUrl"
+         原网页: "menuItem:originPage"
+         阅读模式: "menuItem:readMode"
+         在QQ浏览器中打开: "menuItem:openWithQQBrowser"
+         在Safari中打开: "menuItem:openWithSafari"
+         邮件: "menuItem:share:email"
+         一些特殊公众号: "menuItem:share:brand"
+         */
 
-		/**
-		 * 隐藏菜单子按钮
-		 * @function hideMenuItems
-		 * @param {Array} menuItems - 子按钮
-		 */
-		hideMenuItems: function (menuItems) {
-			wx.hideMenuItems({
-				menuList: menuItems// 要隐藏的菜单项，所有menu项见附录3
-			});
-		},
+        /**
+         * 隐藏菜单子按钮
+         * @function hideMenuItems
+         * @param {Array} menuItems - 子按钮
+         */
+        hideMenuItems: function (menuItems) {
+            wx.hideMenuItems({
+                menuList: menuItems// 要隐藏的菜单项，所有menu项见附录3
+            });
+        },
 
-		/**
-		 * 显示菜单子按钮
-		 * @function hideMenuItems
-		 * @param {Array} menuItems - 子按钮
-		 */
-		showMenuItems: function (menuItems) {
-			wx.showMenuItems({
-				menuList: menuItems // 要显示的菜单项，所有menu项见附录3
-			});
-		},
+        /**
+         * 显示菜单子按钮
+         * @function hideMenuItems
+         * @param {Array} menuItems - 子按钮
+         */
+        showMenuItems: function (menuItems) {
+            wx.showMenuItems({
+                menuList: menuItems // 要显示的菜单项，所有menu项见附录3
+            });
+        },
 
-		/**
-		 * 隐藏非基本按钮
-		 * @function hideNonBaseMenuItems
-		 */
-		hideNonBaseMenuItems: function () {
-			wx.hideAllNonBaseMenuItem();
-		},
+        /**
+         * 隐藏非基本按钮
+         * @function hideNonBaseMenuItems
+         */
+        hideNonBaseMenuItems: function () {
+            wx.hideAllNonBaseMenuItem();
+        },
 
-		/**
-		 * 显示非基本按钮
-		 * @function showNonBaseMenuItems
-		 */
-		showNonBaseMenuItems: function () {
-			wx.showAllNonBaseMenuItem();
-		},
+        /**
+         * 显示非基本按钮
+         * @function showNonBaseMenuItems
+         */
+        showNonBaseMenuItems: function () {
+            wx.showAllNonBaseMenuItem();
+        },
 
-		/**
-		 * 调用二维码
-		 * @function scanQRCode
-		 * @param {String} desc - 描述？
-		 * @param {boolean} needResult - 0扫描结果由微信处理，1则直接返回扫描结果，
-		 * @param {function} callback - 回调函数，needResult为 1 时，扫码返回的结果
-		 */
-		scanQRCode: function (desc, needResult, callback) {
-			wx.scanQRCode({
-				desc: desc,
-				needResult: needResult,
-				scanType: ["qrCode", "barCode"],
-				success: function (res) {
-					var result = res.resultStr;
-					if (typeof (callback) == 'function') {
-						callback(result);
-					}
-				}
-			});
-		},
+        /**
+         * 调用二维码
+         * @function scanQRCode
+         * @param {String} desc - 描述？
+         * @param {boolean} needResult - 0扫描结果由微信处理，1则直接返回扫描结果，
+         * @param {function} callback - 回调函数，needResult为 1 时，扫码返回的结果
+         */
+        scanQRCode: function (desc, needResult, callback) {
+            wx.scanQRCode({
+                desc: desc,
+                needResult: needResult,
+                scanType: ["qrCode", "barCode"],
+                success: function (res) {
+                    var result = res.resultStr;
+                    if (typeof (callback) == 'function') {
+                        callback(result);
+                    }
+                }
+            });
+        },
 
-		/**
-		 * 开始录音
-		 * @function startRecord
-		 * @param {function} longTimeAutoStopCallback - 回调函数，60秒自动停止后返回本地录音id，可选
-		 */
-		startRecord: function (longTimeAutoStopCallback) {
-			if (longTimeAutoStopCallback && typeof (longTimeAutoStopCallback) == 'function')
-				wx.onVoiceRecordEnd({
-					// 录音时间超过一分钟没有停止的时候会执行 complete 回调
-					complete: function (res) {
-						var localId = res.localId;
-						longTimeAutoStopCallback(localId);
-					}
-				});
-			wx.startRecord();
-		},
+        /**
+         * 开始录音
+         * @function startRecord
+         * @param {function} longTimeAutoStopCallback - 回调函数，60秒自动停止后返回本地录音id，可选
+         */
+        startRecord: function (longTimeAutoStopCallback) {
+            if (longTimeAutoStopCallback && typeof (longTimeAutoStopCallback) == 'function')
+                wx.onVoiceRecordEnd({
+                    // 录音时间超过一分钟没有停止的时候会执行 complete 回调
+                    complete: function (res) {
+                        var localId = res.localId;
+                        longTimeAutoStopCallback(localId);
+                    }
+                });
+            wx.startRecord();
+        },
 
-		/**
-		 * 停止录音
-		 * @function stopRecord
-		 * @param {function} callback - 回调函数，停止后返回本地录音id
-		 */
-		stopRecord: function (callback) {
-			wx.stopRecord({
-				success: function (res) {
-					var localId = res.localId;
-					if (typeof (callback) == 'function')
-						callback(localId);
-				}
-			});
-		},
+        /**
+         * 停止录音
+         * @function stopRecord
+         * @param {function} callback - 回调函数，停止后返回本地录音id
+         */
+        stopRecord: function (callback) {
+            wx.stopRecord({
+                success: function (res) {
+                    var localId = res.localId;
+                    if (typeof (callback) == 'function')
+                        callback(localId);
+                }
+            });
+        },
 
-		/**
-		 * 播放录音
-		 * @function stopRecord
-		 * @param {int} localId - 本地录音id
-		 * @param {function} onVoicePlayEndCallback - 播放完毕回调函数，返回播放的本地录音id，可选
-		 */
-		playVoice: function (localId, onVoicePlayEndCallback) {
-			if (typeof (onVoicePlayEndCallback) == 'function') {
-				wx.onVoicePlayEnd({
-					complete: function (res) {
-						var localId = res.localId; // 返回音频的本地ID
-						onVoicePlayEndCallback(localId);
-					}
-				});
-			}
-			wx.playVoice({
-				localId: localId // 需要播放的音频的本地ID，由stopRecord接口获得
-			});
-		},
+        /**
+         * 播放录音
+         * @function stopRecord
+         * @param {int} localId - 本地录音id
+         * @param {function} onVoicePlayEndCallback - 播放完毕回调函数，返回播放的本地录音id，可选
+         */
+        playVoice: function (localId, onVoicePlayEndCallback) {
+            if (typeof (onVoicePlayEndCallback) == 'function') {
+                wx.onVoicePlayEnd({
+                    complete: function (res) {
+                        var localId = res.localId; // 返回音频的本地ID
+                        onVoicePlayEndCallback(localId);
+                    }
+                });
+            }
+            wx.playVoice({
+                localId: localId // 需要播放的音频的本地ID，由stopRecord接口获得
+            });
+        },
 
-		/**
-		 * 暂停录音
-		 * @function stopRecord
-		 * @param {int} localId - 本地录音id
-		 */
-		pauseVoice: function (localId) {
-			wx.pauseVoice({
-				localId: localId // 需要暂停的音频的本地ID，由stopRecord接口获得
-			});
-		},
+        /**
+         * 暂停录音
+         * @function stopRecord
+         * @param {int} localId - 本地录音id
+         */
+        pauseVoice: function (localId) {
+            wx.pauseVoice({
+                localId: localId // 需要暂停的音频的本地ID，由stopRecord接口获得
+            });
+        },
 
-		/**
-		 * 停止录音
-		 * @function stopRecord
-		 * @param {int} localId - 本地录音id
-		 */
-		stopVoice: function (localId) {
-			wx.stopVoice({
-				localId: localId // 需要停止的音频的本地ID，由stopRecord接口获得
-			});
-		},
+        /**
+         * 停止录音
+         * @function stopRecord
+         * @param {int} localId - 本地录音id
+         */
+        stopVoice: function (localId) {
+            wx.stopVoice({
+                localId: localId // 需要停止的音频的本地ID，由stopRecord接口获得
+            });
+        },
 
-		/**
-		 * 上传录音
-		 * @function uploadVoice
-		 * @param {int} localId - 本地录音id
-		 * @param {boolean} isShowProgressTips - 是否显示进度条
-		 * @param {function} callback - 回调函数，返回上传后服务端音频id
-		 */
-		uploadVoice: function (localId, isShowProgressTips, callback) {
-			wx.uploadVoice({
-				localId: localId, // 需要上传的音频的本地ID，由stopRecord接口获得
-				isShowProgressTips: isShowProgressTips,// 默认为1，显示进度提示
-				success: function (res) {
-					var serverId = res.serverId; // 返回音频的服务器端ID
-					if (typeof (callback) == 'function')
-						callback(serverId);
-				}
-			});
-		},
+        /**
+         * 上传录音
+         * @function uploadVoice
+         * @param {int} localId - 本地录音id
+         * @param {boolean} isShowProgressTips - 是否显示进度条
+         * @param {function} callback - 回调函数，返回上传后服务端音频id
+         */
+        uploadVoice: function (localId, isShowProgressTips, callback) {
+            wx.uploadVoice({
+                localId: localId, // 需要上传的音频的本地ID，由stopRecord接口获得
+                isShowProgressTips: isShowProgressTips,// 默认为1，显示进度提示
+                success: function (res) {
+                    var serverId = res.serverId; // 返回音频的服务器端ID
+                    if (typeof (callback) == 'function')
+                        callback(serverId);
+                }
+            });
+        },
 
-		/**
-		 * 下载录音
-		 * @function downloadVoice
-		 * @param {int} serverId - 服务端录音id
-		 * @param {boolean} isShowProgressTips - 是否显示进度条
-		 * @param {function} callback - 回调函数，返回本地音频id
-		 */
-		downloadVoice: function (serverId, isShowProgressTips, callback) {
-			wx.downloadVoice({
-				serverId: serverId, // 需要下载的音频的服务器端ID，由uploadVoice接口获得
-				isShowProgressTips: isShowProgressTips,// 默认为1，显示进度提示
-				success: function (res) {
-					var localId = res.localId; // 返回音频的本地ID
-					if (typeof (callback) == 'function')
-						callback(localId);
-				}
-			});
-		},
+        /**
+         * 下载录音
+         * @function downloadVoice
+         * @param {int} serverId - 服务端录音id
+         * @param {boolean} isShowProgressTips - 是否显示进度条
+         * @param {function} callback - 回调函数，返回本地音频id
+         */
+        downloadVoice: function (serverId, isShowProgressTips, callback) {
+            wx.downloadVoice({
+                serverId: serverId, // 需要下载的音频的服务器端ID，由uploadVoice接口获得
+                isShowProgressTips: isShowProgressTips,// 默认为1，显示进度提示
+                success: function (res) {
+                    var localId = res.localId; // 返回音频的本地ID
+                    if (typeof (callback) == 'function')
+                        callback(localId);
+                }
+            });
+        },
 
-		/**
-		 * 转义录音
-		 * @function downloadVoice
-		 * @param {int} localId - 本地录音id
-		 * @param {boolean} isShowProgressTips - 是否显示进度条
-		 * @param {function} callback - 回调函数，返回转义后的内容
-		 */
-		translateVocie: function (localId, isShowProgressTips, callback) {
-			wx.translateVoice({
-				localId: localId, // 需要识别的音频的本地Id，由录音相关接口获得
-				isShowProgressTips: isShowProgressTips, // 默认为1，显示进度提示
-				success: function (res) {
-					if (typeof (callback) == 'function')
-						callback(res.translateResult);
-				}
-			});
-		},
+        /**
+         * 转义录音
+         * @function downloadVoice
+         * @param {int} localId - 本地录音id
+         * @param {boolean} isShowProgressTips - 是否显示进度条
+         * @param {function} callback - 回调函数，返回转义后的内容
+         */
+        translateVocie: function (localId, isShowProgressTips, callback) {
+            wx.translateVoice({
+                localId: localId, // 需要识别的音频的本地Id，由录音相关接口获得
+                isShowProgressTips: isShowProgressTips, // 默认为1，显示进度提示
+                success: function (res) {
+                    if (typeof (callback) == 'function')
+                        callback(res.translateResult);
+                }
+            });
+        },
 
-		/**
-		 * 打开一个位置
-		 * @function openLocation
-		 * @param {double} lat - 纬度
-		 * @param {double} lon - 经度
-		 * @param {String} name - 位置名
-		 * @param {String} address - 地址详情说明
-		 * @param {int} scale - 地图缩放比例 1~28
-		 * @param {String} infoUrl - 在查看位置界面底部显示的超链接,可点击跳转
-		 */
-		openLocation: function (lat, lon, name, address, scale, infoUrl) {
-			wx.openLocation({
-				latitude: lat,
-				longitude: lon,
-				name: name,
-				address: address,
-				scale: scale,
-				infoUrl: infoUrl
-			});
-		},
+        /**
+         * 打开一个位置
+         * @function openLocation
+         * @param {double} lat - 纬度
+         * @param {double} lon - 经度
+         * @param {String} name - 位置名
+         * @param {String} address - 地址详情说明
+         * @param {int} scale - 地图缩放比例 1~28
+         * @param {String} infoUrl - 在查看位置界面底部显示的超链接,可点击跳转
+         */
+        openLocation: function (lat, lon, name, address, scale, infoUrl) {
+            wx.openLocation({
+                latitude: lat,
+                longitude: lon,
+                name: name,
+                address: address,
+                scale: scale,
+                infoUrl: infoUrl
+            });
+        },
 
-		/**
-		 * 获取当前位置信息
-		 * @function getLocation
-		 * @param {function} callback - 回调函数，返回当前位置信息；{longitude:0,latitude:0,accuracy:0}
-		 */
-		getLocation: function (callback) {
-			wx.getLocation({
-				timestamp: '', // 位置签名时间戳，仅当需要兼容6.0.2版本之前时提供
-				nonceStr: '', // 位置签名随机串，仅当需要兼容6.0.2版本之前时提供
-				addrSign: '', // 位置签名，仅当需要兼容6.0.2版本之前时提供，详见附录4
-				success: function (res) {
-					var lon = res.longitude; // 纬度，浮点数，范围为90 ~ -90
-					var lat = res.latitude; // 经度，浮点数，范围为180 ~ -180。
-					var accuracy = res.accuracy; // 位置精度
-					if (typeof (callback) == 'function')
-						callback({
-							lat: lat,
-							lon: lon,
-							accuracy: accuracy
-						});
-				}
-			});
-		},
+        /**
+         * 获取当前位置信息
+         * @function getLocation
+         * @param {function} callback - 回调函数，返回当前位置信息；{longitude:0,latitude:0,accuracy:0}
+         */
+        getLocation: function (callback) {
+            wx.getLocation({
+                timestamp: '', // 位置签名时间戳，仅当需要兼容6.0.2版本之前时提供
+                nonceStr: '', // 位置签名随机串，仅当需要兼容6.0.2版本之前时提供
+                addrSign: '', // 位置签名，仅当需要兼容6.0.2版本之前时提供，详见附录4
+                success: function (res) {
+                    var lon = res.longitude; // 纬度，浮点数，范围为90 ~ -90
+                    var lat = res.latitude; // 经度，浮点数，范围为180 ~ -180。
+                    var accuracy = res.accuracy; // 位置精度
+                    if (typeof (callback) == 'function')
+                        callback({
+                            lat: lat,
+                            lon: lon,
+                            accuracy: accuracy
+                        });
+                }
+            });
+        },
 
-		/**
-		 * 调用支付接口
-		 * @function payRequest
-		 * @param {String} payAppId - 支付的微信AppId
-		 * @param {String} payAppKey - 支付微信appKey
-		 * @param {String} partnerId - 支付商户partnerId
-		 * @param {String} partnerKey - 支付商户partnerKey
-		 * @param {String} productName - 商品名称
-		 * @param {String} orderNum - 订单数量
-		 * @param {String} totalPrice - 总共金额 单位：分
-		 * @param {String} clientIp - 客户端ip
-		 * @param {String} notifyUrl - 通知url
-		 * @param {function} callback - 回调函数，返回支付状态【新版sdk中貌似已经取消】
-		 */
-		payRequest: function (payAppId, payAppKey, partnerId, partnerKey, productName, orderNum, totalPrice, clientIp, notifyUrl, callback) {
-			wx.chooseWXPay({
-				timestamp: _getTimeStamp(), // 支付签名时间戳，注意微信jssdk中的所有使用timestamp字段均为小写。但最新版的支付后台生成签名使用的timeStamp字段名需大写其中的S字符
-				nonceStr: _getNonceStr(), // 支付签名随机串，不长于 32 位
-				package: _getPackage(partnerId, partnerKey, productName, orderNum, totalPrice, clientIp, notifyUrl), // 统一支付接口返回的prepay_id参数值，提交格式如：prepay_id=***）
-				signType: 'SHA1', // 签名方式，默认为'SHA1'，使用新版支付需传入'MD5'
-				paySign: _getSign(payAppId, payAppKey) // 支付签名
-			});
-		},
+        /**
+         * 调用支付接口
+         * @function payRequest
+         * @param {String} payAppId - 支付的微信AppId
+         * @param {String} payAppKey - 支付微信appKey
+         * @param {String} partnerId - 支付商户partnerId
+         * @param {String} partnerKey - 支付商户partnerKey
+         * @param {String} productName - 商品名称
+         * @param {String} orderNum - 订单数量
+         * @param {String} totalPrice - 总共金额 单位：分
+         * @param {String} clientIp - 客户端ip
+         * @param {String} notifyUrl - 通知url
+         * @param {function} callback - 回调函数，返回支付状态【新版sdk中貌似已经取消】
+         */
+        payRequest: function (payAppId, payAppKey, partnerId, partnerKey, productName, orderNum, totalPrice, clientIp, notifyUrl, callback) {
+            wx.chooseWXPay({
+                timestamp: _getTimeStamp(), // 支付签名时间戳，注意微信jssdk中的所有使用timestamp字段均为小写。但最新版的支付后台生成签名使用的timeStamp字段名需大写其中的S字符
+                nonceStr: _getNonceStr(), // 支付签名随机串，不长于 32 位
+                package: _getPackage(partnerId, partnerKey, productName, orderNum, totalPrice, clientIp, notifyUrl), // 统一支付接口返回的prepay_id参数值，提交格式如：prepay_id=***）
+                signType: 'SHA1', // 签名方式，默认为'SHA1'，使用新版支付需传入'MD5'
+                paySign: _getSign(payAppId, payAppKey) // 支付签名
+            });
+        },
 
-		/**
-		 * @private
-		 * 获取网络类型
-		 * @function _getNetworkType
-		 */
-		_getNetworkType: function () {
-			wx.getNetworkType({
-				success: function (res) {
-					networkType = res.networkType; // 返回网络类型2g，3g，4g，wifi
-				}
-			});
-		},
+        /**
+         * @private
+         * 获取网络类型
+         * @function _getNetworkType
+         */
+        _getNetworkType: function () {
+            wx.getNetworkType({
+                success: function (res) {
+                    networkType = res.networkType; // 返回网络类型2g，3g，4g，wifi
+                }
+            });
+        },
 
-		/**
-		 * @private
-		 * 初始化分享
-		 * @function _initShare
-		 */
-		_initShare: function () {
-			console.log('_initShare');
-			that._onMenuShareTimeline();
+        /**
+         * @private
+         * 初始化分享
+         * @function _initShare
+         */
+        _initShare: function () {
+            console.log('_initShare');
+            that._onMenuShareTimeline();
 
-			that._onMenuShareAppMessage();
+            that._onMenuShareAppMessage();
 
-			that._onMenuShareQQ();
+            that._onMenuShareQQ();
 
-			that._onMenuShareWeibo();
-		},
+            that._onMenuShareWeibo();
+        },
 
-		/**
-		 * @private
-		 * 朋友圈分享设置
-		 * @function _onMenuShareTimeline
-		 */
-		_onMenuShareTimeline: function () {
-			wx.onMenuShareTimeline({
-				title: that.shareParam.ShareTitle, // 分享标题
-				link: that.shareParam.ShareLink, // 分享链接
-				imgUrl: that.shareParam.ShareImgUrl, // 分享图标
-				success: function (res) {
+        /**
+         * @private
+         * 朋友圈分享设置
+         * @function _onMenuShareTimeline
+         */
+        _onMenuShareTimeline: function () {
+            wx.onMenuShareTimeline({
+                title: that.shareParam.ShareTitle, // 分享标题
+                link: that.shareParam.ShareLink, // 分享链接
+                imgUrl: that.shareParam.ShareImgUrl, // 分享图标
+                success: function (res) {
 
-					if (that._eventMap["onShareTimeline"] && typeof (that._eventMap["onShareTimeline"]) == 'function') {
-						that._eventMap["onShareTimeline"](true);
-					}
+                    if (that._eventMap["onShareTimeline"] && typeof (that._eventMap["onShareTimeline"]) == 'function') {
+                        that._eventMap["onShareTimeline"](true);
+                    }
 
-					if (that.shareParam.callback && typeof (that.shareParam.callback) == 'function')
-						that.shareParam.callback(true);
-				},
-				cancel: function (res) {
+                    if (that.shareParam.callback && typeof (that.shareParam.callback) == 'function')
+                        that.shareParam.callback(true);
+                },
+                cancel: function (res) {
 
-					if (that._eventMap["onShareTimeline"] && typeof (that._eventMap["onShareTimeline"]) == 'function') {
-						that._eventMap["onShareTimeline"]();
-					}
+                    if (that._eventMap["onShareTimeline"] && typeof (that._eventMap["onShareTimeline"]) == 'function') {
+                        that._eventMap["onShareTimeline"]();
+                    }
 
-					if (that.shareParam.callback && typeof (that.shareParam.callback) == 'function')
-						that.shareParam.callback();
-				}
-			});
-		},
+                    if (that.shareParam.callback && typeof (that.shareParam.callback) == 'function')
+                        that.shareParam.callback();
+                }
+            });
+        },
 
-		/**
-		 * @private
-		 * 朋友分享设置
-		 * @function _onMenuShareAppMessage
-		 */
-		_onMenuShareAppMessage: function () {
-			wx.onMenuShareAppMessage({
-				title: that.shareParam.ShareTitle, // 分享标题
-				desc: that.shareParam.ShareDesc, // 分享描述
-				link: that.shareParam.ShareLink, // 分享链接
-				imgUrl: that.shareParam.ShareImgUrl, // 分享图标
-				type: that.shareParam.Type, // 分享类型,music、video或link，不填默认为link
-				dataUrl: that.shareParam.DataUrl, // 如果type是music或video，则要提供数据链接，默认为空
-				success: function (res) {
-					if (that._eventMap["onShareAppMessage"] && typeof (that._eventMap["onShareAppMessage"]) == 'function') {
-						that._eventMap["onShareAppMessage"](true);
-					}
+        /**
+         * @private
+         * 朋友分享设置
+         * @function _onMenuShareAppMessage
+         */
+        _onMenuShareAppMessage: function () {
+            wx.onMenuShareAppMessage({
+                title: that.shareParam.ShareTitle, // 分享标题
+                desc: that.shareParam.ShareDesc, // 分享描述
+                link: that.shareParam.ShareLink, // 分享链接
+                imgUrl: that.shareParam.ShareImgUrl, // 分享图标
+                type: that.shareParam.Type, // 分享类型,music、video或link，不填默认为link
+                dataUrl: that.shareParam.DataUrl, // 如果type是music或video，则要提供数据链接，默认为空
+                success: function (res) {
+                    if (that._eventMap["onShareAppMessage"] && typeof (that._eventMap["onShareAppMessage"]) == 'function') {
+                        that._eventMap["onShareAppMessage"](true);
+                    }
 
-					if (that.shareParam.callback && typeof (that.shareParam.callback) == 'function')
-						that.shareParam.callback(true);
-				},
-				cancel: function (res) {
-					if (that._eventMap["onShareAppMessage"] && typeof (that._eventMap["onShareAppMessage"]) == 'function') {
-						that._eventMap["onShareAppMessage"]();
-					}
+                    if (that.shareParam.callback && typeof (that.shareParam.callback) == 'function')
+                        that.shareParam.callback(true);
+                },
+                cancel: function (res) {
+                    if (that._eventMap["onShareAppMessage"] && typeof (that._eventMap["onShareAppMessage"]) == 'function') {
+                        that._eventMap["onShareAppMessage"]();
+                    }
 
-					if (that.shareParam.callback && typeof (that.shareParam.callback) == 'function')
-						that.shareParam.callback();
-				}
-			});
-		},
+                    if (that.shareParam.callback && typeof (that.shareParam.callback) == 'function')
+                        that.shareParam.callback();
+                }
+            });
+        },
 
-		/**
-		 * @private
-		 * QQ分享设置
-		 * @function _onMenuShareQQ
-		 */
-		_onMenuShareQQ: function () {
-			wx.onMenuShareQQ({
-				title: that.shareParam.ShareTitle, // 分享标题
-				desc: that.shareParam.ShareDesc, // 分享描述
-				link: that.shareParam.ShareLink, // 分享链接
-				imgUrl: that.shareParam.ShareImgUrl, // 分享图标
-				success: function (res) {
-					if (that._eventMap["onShareQQ"] && typeof (that._eventMap["onShareQQ"]) == 'function') {
-						that._eventMap["onShareQQ"](true);
-					}
+        /**
+         * @private
+         * QQ分享设置
+         * @function _onMenuShareQQ
+         */
+        _onMenuShareQQ: function () {
+            wx.onMenuShareQQ({
+                title: that.shareParam.ShareTitle, // 分享标题
+                desc: that.shareParam.ShareDesc, // 分享描述
+                link: that.shareParam.ShareLink, // 分享链接
+                imgUrl: that.shareParam.ShareImgUrl, // 分享图标
+                success: function (res) {
+                    if (that._eventMap["onShareQQ"] && typeof (that._eventMap["onShareQQ"]) == 'function') {
+                        that._eventMap["onShareQQ"](true);
+                    }
 
-					if (that.shareParam.callback && typeof (that.shareParam.callback) == 'function')
-						that.shareParam.callback(true);
-				},
-				cancel: function (res) {
-					if (that._eventMap["onShareQQ"] && typeof (that._eventMap["onShareQQ"]) == 'function') {
-						that._eventMap["onShareQQ"]();
-					}
+                    if (that.shareParam.callback && typeof (that.shareParam.callback) == 'function')
+                        that.shareParam.callback(true);
+                },
+                cancel: function (res) {
+                    if (that._eventMap["onShareQQ"] && typeof (that._eventMap["onShareQQ"]) == 'function') {
+                        that._eventMap["onShareQQ"]();
+                    }
 
-					if (that.shareParam.callback && typeof (that.shareParam.callback) == 'function')
-						that.shareParam.callback();
-				}
-			});
-		},
+                    if (that.shareParam.callback && typeof (that.shareParam.callback) == 'function')
+                        that.shareParam.callback();
+                }
+            });
+        },
 
-		/**
-		 * @private
-		 * 微博分享设置
-		 * @function _onMenuShareWeibo
-		 */
-		_onMenuShareWeibo: function () {
-			wx.onMenuShareWeibo({
-				title: that.shareParam.ShareTitle, // 分享标题
-				desc: that.shareParam.ShareDesc, // 分享描述
-				link: that.shareParam.ShareLink, // 分享链接
-				imgUrl: that.shareParam.ShareImgUrl, // 分享图标
-				success: function (res) {
-					if (that._eventMap["onShareWeibo"] && typeof (that._eventMap["onShareWeibo"]) == 'function') {
-						that._eventMap["onShareWeibo"](true);
-					}
+        /**
+         * @private
+         * 微博分享设置
+         * @function _onMenuShareWeibo
+         */
+        _onMenuShareWeibo: function () {
+            wx.onMenuShareWeibo({
+                title: that.shareParam.ShareTitle, // 分享标题
+                desc: that.shareParam.ShareDesc, // 分享描述
+                link: that.shareParam.ShareLink, // 分享链接
+                imgUrl: that.shareParam.ShareImgUrl, // 分享图标
+                success: function (res) {
+                    if (that._eventMap["onShareWeibo"] && typeof (that._eventMap["onShareWeibo"]) == 'function') {
+                        that._eventMap["onShareWeibo"](true);
+                    }
 
-					if (that.shareParam.callback && typeof (that.shareParam.callback) == 'function')
-						that.shareParam.callback(true);
-				},
-				cancel: function (res) {
-					if (that._eventMap["onShareWeibo"] && typeof (that._eventMap["onShareWeibo"]) == 'function') {
-						that._eventMap["onShareWeibo"]();
-					}
+                    if (that.shareParam.callback && typeof (that.shareParam.callback) == 'function')
+                        that.shareParam.callback(true);
+                },
+                cancel: function (res) {
+                    if (that._eventMap["onShareWeibo"] && typeof (that._eventMap["onShareWeibo"]) == 'function') {
+                        that._eventMap["onShareWeibo"]();
+                    }
 
-					if (that.shareParam.callback && typeof (that.shareParam.callback) == 'function')
-						that.shareParam.callback();
-				}
-			});
-		},
-	}
+                    if (that.shareParam.callback && typeof (that.shareParam.callback) == 'function')
+                        that.shareParam.callback();
+                }
+            });
+        }
+    }
 
 	/* 老版本wx-js */
 	var oldwx = function () {
