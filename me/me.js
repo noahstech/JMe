@@ -122,6 +122,10 @@
 				style.innerHTML = str_css;
 				document.getElementsByTagName("HEAD").item(0).appendChild(style);
 			}
+		},
+
+		trim: function (str) {
+			return str.replace(/^\s+/g, "").replace(/\s+$/g, "");
 		}
 	}
 })(me);
@@ -131,6 +135,7 @@
  */
 (function ($) {
 	location.hash = "/";
+
 	$.utils.extend($, {
 		ctrl: function ($rootScope, $scope, $compile, $location, $http) {
 			$.ngobj = {
@@ -647,9 +652,23 @@
 			var startPageName = $.utils.getQueryString("p");
 			if (startPageName) {
 				$.show(startPageName, { showType: 0 });
+				return;
 			}
-			else if ($._param.config.main) {
+
+			//var hash = location.hash;
+			//if (hash) {
+			//	var reg = /([a-zA-Z\d_]+\-?)+/;
+			//	var result = reg.exec(hash);
+			//	if (result) {
+			//		var path = result[1].replace(/\-/g, "/");
+			//		$.show(path, { showType: 0 });
+			//		return;
+			//	}
+			//}
+
+			if ($._param.config.main) {
 				$.show($._param.config.main, { showType: 0 });
+				return;
 			}
 		},
 
@@ -676,8 +695,9 @@
 		 * @param {Object} options - me.show中传入的options对象
 		 */
 		_getPageHtml: function (src, options) {
-			var pageId = "id" + Math.random().toString().substring(2),
-				pageSrc = $._method._getTplSrc(src);
+			var pageSrc = $._method._getTplSrc(src);
+			var path = pageSrc.replace(/\//g, "-").substring(0, pageSrc.indexOf("."));
+			var pageId = path + "-" + Math.round(Math.random() * 10000);
 
 			var page = '<div id="' + pageId + '" ng-include src="\'' + pageSrc + '?temp=' + Math.random() + '\'"';
 			//page += that._getShowAniClass(options);
