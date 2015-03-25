@@ -265,8 +265,6 @@
 		 * @param {Function} fn - 指令构造函数，参考angular.directive
 		 */
 		directive: function (tagName, fn) {
-			if (typeof fn != "function") return;
-
 			$._param.directiveList.push({
 				tagName: tagName,
 				fn: fn
@@ -325,7 +323,11 @@
 				container.html(html);
 				hideSelector && jQuery(hideSelector).show();
 			} else {
-				lastPage && (lastPage.scrollTop = jQuery(document).scrollTop());
+				if (lastPage) {
+					lastPage.scrollTop = $._param.config.scroller
+						? jQuery($._param.config.scroller).scrollTop()
+						: jQuery(document).scrollTop()
+				}
 
 				container.append(html);
 				newPage.style == "pop" || (lastPage && (jQuery("#" + lastPage.id).hide()));
@@ -578,7 +580,9 @@
 				$._method._setTitle(lastPage);
 
 				$.ngobj.$scope.$$postDigest(function () {
-					window.scrollTo(0, lastPage.scrollTop);
+					$._param.config.scroller 
+						? jQuery($._param.config.scroller)[0].scrollTop = lastPage.scrollTop
+						: window.scrollTo(0, lastPage.scrollTop);
 				});
 			}
 
