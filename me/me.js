@@ -329,7 +329,9 @@
 						: jQuery(document).scrollTop()
 				}
 
-				container.append(html);
+				newPage.style == "pop" 
+					? jQuery("body").append(html)
+					: container.append(html);
 				newPage.style == "pop" || (lastPage && (jQuery("#" + lastPage.id).hide()));
 
 				$.ngobj.$location.hash(newPage.hash)
@@ -564,7 +566,7 @@
 
 			// 删掉当前页面
 			var curPageObj = $._method._getLastPage(true);
-			$._method._cleanCtrl();
+			$._method._cleanCtrl(false, curPageObj);
 
 			// 触发hide事件
 			$._method._triggerEvent(curPageObj, "hide", $._param.hideParam != null ? [$._param.hideParam] : null);
@@ -574,7 +576,8 @@
 
 			// 显示上一个页面
 			var lastPage = $._method._getLastPage();
-			if (lastPage) {
+
+			if (curPageObj.style != "pop" && lastPage) {
 				$.ngobj.$location.hash(lastPage.hash);
 				jQuery("#" + lastPage.id).show();
 				$._method._setTitle(lastPage);
@@ -598,10 +601,12 @@
 		 * 准备销毁页面控制器内存
 		 * @function _cleanCtrl
 		 * @param {Boolean} isCleanAll - 是否销毁所有的页面，如果为false，只销毁当前的页面
+		 * @param {Boolean} curPageObj - 当前页面的对象
 		 */
-		_cleanCtrl: function (isCleanAll) {
-			if (!isCleanAll)
-				$._method._cleanScope(angular.element($._method._getContainer().find("> div:last > div")[0]));
+		_cleanCtrl: function (isCleanAll, curPageObj) {
+			if (!isCleanAll) {
+				$._method._cleanScope(angular.element(jQuery("#" + curPageObj.id + " > div")[0]));
+			}
 			else {
 				var pages = $._method._getContainer().find("> div"),
                     angularEl;
