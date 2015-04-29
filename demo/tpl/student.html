@@ -1,0 +1,52 @@
+﻿<div ng-controller="student.ctrl" class="pop">
+	<div style="width:500px;">
+		<div class="pop_title">学生信息<i ng-click="hide()">关闭</i></div>
+		<div class="pop_body">
+			<table class="form">
+				<tr>
+					<td class="label require">姓名：</td>
+					<td>
+						<input class="input" ng-model="student.name" />
+					</td>
+				</tr>
+				<tr>
+					<td class="label require">年龄：</td>
+					<td>
+						<input class="input" type="number" ng-model="student.age" />
+					</td>
+				</tr>
+				<tr>
+					<td class="label require">性别：</td>
+					<td>
+						<ul class="radio">
+							<li>
+								<input type="radio" name="aeu_rb1" id="aeu_rb1_1" ng-model="student.sex" value="1" />
+								<label for="aeu_rb1_1">男</label>
+							</li>
+							<li>
+								<input type="radio" name="aeu_rb1" id="aeu_rb1_2" ng-model="student.sex" value="0" />
+								<label for="aeu_rb1_2">女</label>
+							</li>
+						</ul>
+					</td>
+				</tr>
+				<tr>
+					<td class="label">联系电话：</td>
+					<td>
+						<input class="input" ng-model="student.phone" />
+					</td>
+				</tr>
+				<tr>
+					<td class="label require">班级：</td>
+					<td>
+						<input class="input" ng-model="student.class" />
+					</td>
+				</tr>
+			</table>
+		</div>
+		<div class="pop_btn">
+			<div class="button white short" ng-click="hide()">取消</div>
+			<div class="button blue long" ng-click="confirm(student)">确定</div>
+		</div>
+	</div>
+</div>

@@ -1,0 +1,45 @@
+﻿<div ng-controller="list.ctrl">
+	<ul class="mbx">
+		<li>学生列表</li>
+	</ul>
+	<div class="ir_tool" style="padding-bottom: 20px; ">
+		<table class="form">
+			<tr>
+				<td><input class="input" placeholder="姓名" ng-model="params.name" /></td>
+				<td>
+					<div class="button blue short" ng-click="search(params)">查询</div>
+					<div class="button yellow" ng-click="add()">添加学生 +</div>
+				</td>
+			</tr>
+		</table>
+	</div>
+	<div style="position:absolute;top:110px;bottom:10px;right:3px;left:10px;overflow-y:auto;">
+		<table class="table">
+			<thead>
+				<tr>
+					<th>姓名</th>
+					<th>年龄</th>
+					<th>性别</th>
+					<th>联系电话</th>
+					<th>班级</th>
+					<th></th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr ng-repeat="d in studentData">
+					<td>{{d.name}}</td>
+					<td>{{d.age}}</td>
+					<td>{{d.sex==1?'男':'女'}}</td>
+					<td>{{d.phone}}</td>
+					<td>{{d.class}}</td>
+					<td>
+						<ul class="table_btn">
+							<li><i class="link" ng-click="del(d.id, $index)">删除</i></li>
+							<li><i class="link" ng-click="edit(d, $index)">编辑</i></li>
+						</ul>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+</div>

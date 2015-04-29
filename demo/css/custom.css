@@ -1,0 +1,23 @@
+﻿.aeu_speciality{
+	display:inline-block;
+	line-height:initial;
+	line-height:25px;
+}
+.aeu_speciality > li{
+	float:left;
+	margin-right:5px;
+}
+.sp_item{
+	width:300px;
+}
+.sp_item_btn{
+	padding:10px 0;
+	display:inline-block;
+	width:100%;
+}
+.sp_item_btn > div:nth-child(1){
+	float:left;
+}
+.sp_item_btn > div:nth-child(2){
+	float:right;
+}

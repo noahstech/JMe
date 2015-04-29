@@ -1,0 +1,71 @@
+﻿.login_container{
+	background:url(../images/login_bg.jpg) no-repeat;
+	background-size:100% 100%;
+	position:absolute;
+	left:0;
+	top:0;
+	right:0;
+	bottom:0;
+	font-size:14px;
+	color:#666666;
+}
+.login_input {
+	width:414px;
+	height:390px;
+	background:url(../images/iput.png) no-repeat;
+	position:absolute;
+	top:50%;
+	-webkit-transform:translateY(-50%);
+	right:50px;
+	box-sizing:border-box;
+}
+.login_inner {
+	position:absolute;
+	top:25px;
+	left:25px;
+	right:25px;
+	bottom:25px;
+	background:white;
+	border-radius:5px;
+}
+.login_inner > ul{
+	padding:0 30px;
+}
+.login_label{
+	padding-top:25px;
+	padding-bottom:8px;
+}
+.login_forget{
+	color:#c3c3c3;
+	font-size:11px;
+	text-align:right;
+	line-height:30px;
+	cursor:pointer;
+}
+.login_forget:hover {
+	text-decoration:underline;
+}
+.login_btn{
+	background:#f9f9f9;
+	position:absolute;
+	bottom:0;
+	width:100%;
+	left:0;
+	height:80px;
+	border-top:1px solid #d4d4d4;
+	padding:20px 33px 0 33px;
+	box-sizing:border-box;
+	border-bottom-left-radius:5px;
+	border-bottom-right-radius:5px;
+}
+.login_logo{
+	position:absolute;
+	left:0;
+	top:50%;
+	-webkit-transform:translateY(-50%);
+	right:460px;
+	text-align:center;
+	color:white;
+	font-size:97px;
+	font-weight:bold;
+}

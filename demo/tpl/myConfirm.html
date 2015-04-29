@@ -1,0 +1,12 @@
+﻿<div ng-controller="myConfirm.ctrl" class="pop">
+	<div style="width: 330px;">
+		<div class="pop_title">{{data.title}}<i ng-click="hide()">关闭</i></div>
+		<div class="pop_body" style="text-align:center;">
+			{{data.text}}
+		</div>
+		<div class="pop_btn">
+			<div class="button white short" ng-click="hide()">取消</div>
+			<div class="button blue long" ng-click="confirm()">确定</div>
+		</div>
+	</div>
+</div>

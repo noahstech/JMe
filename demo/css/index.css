@@ -1,0 +1,148 @@
+﻿/*顶部导航*/
+.index_top{
+	background:#3c87d3;
+	position:absolute;
+	left:0;
+	top:0;
+	width:100%;
+	height:60px;
+}
+.it_title{
+	line-height:60px;
+	text-align:center;
+	color:white;
+	font-weight:bold;
+	font-size:18px;
+	width:270px;
+	float:left;
+}
+.it_tab{
+	display:inline-block;
+	float:left;
+	font-size:16px;
+	font-weight:bold;
+	color:white;
+}
+.it_tab > li{
+	float:left;
+	width:130px;
+	line-height:60px;
+	text-align:center;
+	cursor:pointer;
+}
+.it_tab > li:hover{
+	background-color:rgba(255,255,255,0.2);
+}
+.it_tab > li.active{
+	background-color:rgba(255,255,255,0.3);
+}
+.it_info{
+	float:right;
+	width:144px;
+	line-height:60px;
+	color:white;
+	font-size:14px;
+	text-align:center;
+	border-left:2px solid #367abf;
+	cursor:default;
+	position:relative;
+}
+.it_info:after{
+	content: " ";
+	width:13px;
+	height:8px;
+	display:inline-block;
+	background:url(../images/2.png) no-repeat;
+	margin-left:8px;
+	position:relative;
+	top:-2px;
+	-webkit-transition-duration:300ms;
+}
+.it_info:hover:after{
+	-webkit-transform:rotate(-180deg);
+}
+.it_pop{
+	position:absolute;
+	top:60px;
+	width:146px;
+	right:0;
+	line-height:60px;
+	color:white;
+	font-size:14px;
+	background:#367abf;
+	display:none;
+	z-index:10;
+}
+.it_info:hover .it_pop{
+	display:block;
+}
+.it_pop > li{
+	border-top:1px solid #3c87d3;
+	padding-left:50px;
+	position:relative;
+	text-align:left;
+}
+.it_pop > li:hover{
+	background:#23282c;
+}
+.it_pop > li:before{
+	content: " ";
+	position:absolute;
+	display:inline-block;
+	width:50px;
+	left:0;
+	top:0;
+	height:60px;
+	background:center center no-repeat;
+}
+.it_pop > li:nth-child(1):before{
+	background-image:url(../images/3.png);
+}
+.it_pop > li:nth-child(2):before{
+	background-image:url(../images/4.png);
+}
+.it_pop > li:nth-child(3):before{
+	background-image:url(../images/user.png);
+}
+
+/*左边菜单*/
+.index_left{
+	width:170px;
+	position:absolute;
+	top:60px;
+	left:0;
+	bottom:0;
+	background:#23282c;
+	cursor:default;
+}
+.il_menu{
+	line-height:60px;
+	text-align:center;
+	color:#bdd4dd;
+	font-size:14px;
+}
+.il_menu > li {
+	border-bottom:1px solid #30353a;
+}
+.il_menu > li:hover{
+	background-color:#000;
+}
+.il_menu > li.active{
+	background-color:white;
+	color:#3c87d3;
+}
+
+/*右边*/
+.index_right{
+	background-color:white;
+	position:absolute;
+	top:60px;
+	left:170px;
+	right:0;
+	bottom:0;
+	padding:20px;
+	overflow:auto;
+}
+.ir_tool{
+	padding-bottom:20px;
+}
